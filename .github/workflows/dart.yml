@@ -15,12 +15,16 @@ jobs:
           channel: 'stable'
           architecture: x64
       - run: flutter pub get
+      
+      # Clear CocoaPods cache and update repo
+      - name: Clear CocoaPods Cache
+        run: pod cache clean --all
 
-      # Ensure CocoaPods is up to date and fetch the latest specs
-      - name: Install CocoaPods
+      # Ensure CocoaPods is up-to-date
+      - name: Install CocoaPods and update repo
         run: |
           brew install cocoapods
-          pod install --repo-update
+          pod repo update
         working-directory: ios
 
       - run: flutter build ios --release --no-codesign

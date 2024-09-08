@@ -4,8 +4,8 @@ platform :ios, '14.0'
 target 'Runner' do
   use_frameworks!
 
-  pod 'GoogleMaps', '~> 7.0'
-  pod 'GoogleMapsBase', '~> 7.0'
+  pod 'GoogleMaps', '~> 6.0'
+  pod 'GoogleMapsBase', '~> 6.0'
 
   target 'RunnerTests' do
     inherit! :search_paths
