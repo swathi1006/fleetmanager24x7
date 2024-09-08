@@ -20,32 +20,36 @@ jobs:
       # Ensure CocoaPods is installed and the repo is updated
       - name: Install CocoaPods and update repository
         run: |
-          brew install cocoapods # Ensure CocoaPods is installed
+          brew install cocoapods || echo "CocoaPods already installed"
           pod repo update        # Update podspec repository
         working-directory: ios   # Run this inside the ios folder
 
       # Install pods for the iOS project
-      - run: pod install
+      - name: Install iOS Pods
+        run: pod install --repo-update
         working-directory: ios   # Run this inside the ios folder
 
       # Build the iOS app
-      - run: flutter build ios --release --no-codesign
+      - name: Build iOS App
+        run: flutter build ios --release --no-codesign
 
       # Create the Payload folder for IPA
-      - run: mkdir Payload
+      - name: Create Payload Folder
+        run: mkdir Payload
         working-directory: build/ios/iphoneos
 
       # Move the app into the Payload folder
-      - run: mv Runner.app/ Payload
+      - name: Move App to Payload Folder
+        run: mv Runner.app/ Payload
         working-directory: build/ios/iphoneos
 
       # Zip the payload into an IPA file
-      - name: Zip output
+      - name: Zip output to IPA
         run: zip -qq -r -9 FlutterIpaExport.ipa Payload
         working-directory: build/ios/iphoneos
 
       # Upload the IPA file as a release artifact
-      - name: Upload binaries to release
+      - name: Upload IPA to GitHub Release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
