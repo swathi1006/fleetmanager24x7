@@ -17,17 +17,17 @@ jobs:
           
       - run: flutter pub get
 
-      # Ensure CocoaPods is installed and the repo is updated
+      # Install CocoaPods and update repository
       - name: Install CocoaPods and update repository
         run: |
           brew install cocoapods || echo "CocoaPods already installed"
-          pod repo update        # Update podspec repository
-        working-directory: ios   # Run this inside the ios folder
+          pod repo update
+        working-directory: ios
 
-      # Install pods for the iOS project
+      # Install iOS Pods
       - name: Install iOS Pods
         run: pod install --repo-update
-        working-directory: ios   # Run this inside the ios folder
+        working-directory: ios
 
       # Build the iOS app
       - name: Build iOS App
