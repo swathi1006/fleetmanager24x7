@@ -9,7 +9,7 @@ import 'package:fleet_manager_driver_app/view/home_screen.dart';
 import 'package:fleet_manager_driver_app/widget/toaster_message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
+// import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -183,13 +183,13 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                               try {
                                 final Uint8List bytes = await _scratchImageFile.value!
                                     .readAsBytes();
-                                final Uint8List compressedBytes = await FlutterImageCompress.compressWithList(
-                                  bytes,
-                                  // minWidth: 600,
-                                  // minHeight: 800,
-                                  quality: 65,
-                                );
-                                String base64Image = base64Encode(compressedBytes);
+                                // final Uint8List compressedBytes = await FlutterImageCompress.compressWithList(
+                                //   bytes,
+                                //   // minWidth: 600,
+                                //   // minHeight: 800,
+                                //   quality: 65,
+                                // );
+                                String base64Image = base64Encode(bytes);
                                 // print("byte converted...................");
                                 await reportIssue(
                                 loginController.currentTrip!.tripNumber,
