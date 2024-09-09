@@ -1,13 +1,14 @@
-source 'https://cdn.cocoapods.org/'
+source 'https://github.com/CocoaPods/Specs.git'
 platform :ios, '14.0'
 
 target 'Runner' do
   use_frameworks!
 
-  # Use the latest versions of GoogleMaps and GoogleMapsBase
+  # Add Flutter pods and dependencies
   pod 'GoogleMaps', '~> 7.1.0'
 
-  # pod 'GoogleMapsBase', '~> 7.1.0'
+  # flutter_image_compress is handled by the Flutter plugin mechanism
+  # It will automatically add the right pod dependencies if you run `flutter pub get`
 
   target 'RunnerTests' do
     inherit! :search_paths
