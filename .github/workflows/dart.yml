@@ -14,29 +14,47 @@ jobs:
         with:
           channel: 'stable'
           architecture: x64
+          
+      # Run flutter pub get to fetch dependencies
       - run: flutter pub get
-      
 
-      - run: pod repo update
+      # Install CocoaPods and update repository
+      - name: Install CocoaPods and update repository
+        run: |
+          brew install cocoapods || echo "CocoaPods already installed"
+          pod repo update  # Update CocoaPods repository
         working-directory: ios
 
-      - run: flutter build ios --release --no-codesign
+      # Run pod install to install the required pods
+      - name: Install Pods
+        run: pod install --repo-update  # Ensure pods are installed with repo updated
+        working-directory: ios
 
-      - run: mkdir Payload
+      # Build the iOS app
+      - name: Build iOS App
+        run: flutter build ios --release --no-codesign
+
+      # Create the Payload folder for IPA
+      - name: Create Payload Folder
+        run: mkdir Payload
         working-directory: build/ios/iphoneos
 
-      - run: mv Runner.app/ Payload
+      # Move the app into the Payload folder
+      - name: Move App to Payload Folder
+        run: mv Runner.app/ Payload
         working-directory: build/ios/iphoneos
 
-      - name: Zip output
+      # Zip the payload into an IPA file
+      - name: Zip output to IPA
         run: zip -qq -r -9 FlutterIpaExport.ipa Payload
         working-directory: build/ios/iphoneos
 
-      - name: Upload binaries to release
+      # Upload the IPA file as a release artifact
+      - name: Upload IPA to GitHub Release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: build/ios/iphoneos/FlutterIpaExport.ipa
           tag: v1.0
           overwrite: true
-          body: "This is first release"
+          body: "This is the first release"

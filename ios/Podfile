@@ -5,8 +5,8 @@ target 'Runner' do
   use_frameworks!
 
   # Use the latest versions of GoogleMaps and GoogleMapsBase
-  pod 'GoogleMaps', '~> 7.0'
-  pod 'GoogleMapsBase', '~> 7.0'
+  pod 'GoogleMaps', '~> 7.1.0'
+  pod 'GoogleMapsBase', '~> 7.1.0'
 
   target 'RunnerTests' do
     inherit! :search_paths
