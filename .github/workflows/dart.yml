@@ -10,35 +10,39 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@v3
         with:
           channel: 'stable'
           architecture: x64
+
+      - name: Install CocoaPods (optional)
+        run: brew install cocoapods
+        if: 'needs cocoapods'
+
+      - name: Get Flutter dependencies
+        uses: actions/cache@v3
+        with:
+          path: pubspec.lock
+          key: ${{ runner.os }}-lock-${{ hashFiles('pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-lock-
+        if: 'needs flutter'
+
       - run: flutter pub get
 
-      # Ensure CocoaPods is installed and the repo is updated
-      - name: Install CocoaPods and update repository
-        run: |
-          brew install cocoapods # Ensure CocoaPods is installed
-          pod repo update        # Update podspec repository
-        working-directory: ios
+      # Build the iOS app bundle
+      - run: flutter build appbundle --release --no-codesign
 
-      # Install pods for the iOS project
-      - run: pod install
-        working-directory: ios
+      # Convert app bundle to IPA (adjust based on your chosen method)
+      - name: Convert app bundle to IPA using flutter_build_ios_framework
+        uses: flutter-framework/flutter-build-ios-framework@v1.0.0
+        with:
+          app_bundle: build/ios/release/app.aab
+          output_directory: build/ios/iphoneos
 
-      # Build the iOS app
-      - run: flutter build ios --release --no-codesign
+      # Alternatively, use a script or tool to convert app bundle to IPA
 
-      # Create the Payload folder for IPA
-      - run: mkdir Payload
-        working-directory: build/ios/iphoneos
-
-      # Move the app into the Payload folder
-      - run: mv Runner.app/ Payload
-        working-directory: build/ios/iphoneos
-
-      # Zip the payload into an IPA file
+      # Zip the IPA file
       - name: Zip output
         run: zip -qq -r -9 FlutterIpaExport.ipa Payload
         working-directory: build/ios/iphoneos
