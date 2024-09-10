@@ -1,5 +1,4 @@
 
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 import 'constants.dart';
@@ -9,7 +8,7 @@ class MongoDB {
   static Future<Map<String, dynamic>> connect() async {
     db = await Db.create(MONGO_URL);
     await db!.open();
-    var collection_drivers = db!.collection(COLLECTION_DRIVERS);
+     collection_drivers = db!.collection(COLLECTION_DRIVERS);
     collection_temp_vehicles = db!.collection(COLLECTION_TEMPVEHICLES);
     collection_trips = db!.collection(COLLECTION_TRIPS);
     collection_vehicles = db!.collection(COLLECTION_VEHICLES);

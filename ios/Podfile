@@ -4,10 +4,21 @@ platform :ios, '14.0'
 target 'Runner' do
   use_frameworks!
 
+  # Google Maps SDK for iOS
   pod 'GoogleMaps', '~> 7.1.0'
   
-
   target 'RunnerTests' do
     inherit! :search_paths
+  end
+end
+
+# Post-install hook for Geolocator plugin to bypass the 'Location Always' permission check
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    if target.name == "geolocator_apple"
+      target.build_configurations.each do |config|
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)', 'BYPASS_PERMISSION_LOCATION_ALWAYS=1']
+      end
+    end
   end
 end

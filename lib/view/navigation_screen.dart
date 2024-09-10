@@ -20,7 +20,7 @@ import '../widget/toaster_message.dart';
 import 'main_screen.dart';
 
 class NavigationScreen extends StatefulWidget {
-  const NavigationScreen(this.vehicle,{Key? key}) : super(key: key);
+  const NavigationScreen(this.vehicle,{super.key});
   final Vehicle vehicle;
 
   @override
@@ -37,12 +37,12 @@ class _NavigationScreenState extends State<NavigationScreen> {
   NavigationController controller = Get.put(NavigationController());
   LoginController loginController = Get.put(LoginController());
 
-  RxBool _obscureTextPin = true.obs;
+  final RxBool _obscureTextPin = true.obs;
   late final Vehicle selectedVehicle;
   final odometerController = TextEditingController();
   final fuelController = TextEditingController();
 
-  LatLng _selectedLocation = LatLng(9.175249926873791, 76.5014099702239);
+  LatLng _selectedLocation = const LatLng(9.175249926873791, 76.5014099702239);
   String? _currentPlaceName;
   String? _currentPlaceStreet;
   String? _currentPlaceAdministrativeArea;
@@ -62,7 +62,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
     selectedVehicle = widget.vehicle;
     _selectedLocation = selectedVehicle.vehicleLocation != null
         ? LatLng(selectedVehicle.vehicleLocation!.latitude, selectedVehicle.vehicleLocation!.longitude)
-        : LatLng(9.175249926873791, 76.5014099702239);
+        : const LatLng(9.175249926873791, 76.5014099702239);
     locationDetails();
     //snackbarMessage("Please select the location on the map");
   }
@@ -148,6 +148,8 @@ class _NavigationScreenState extends State<NavigationScreen> {
       });
     }
   }
+
+  
 
   Future<void> _pickOdometerImage() async {
     final ImagePicker _picker = ImagePicker();
@@ -235,10 +237,10 @@ class _NavigationScreenState extends State<NavigationScreen> {
                       },
                     );
                   },
-                  child: const Icon(Icons.sos, color: Colors.white, size: 30,),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(100.0),
                   ),
+                  child: const Icon(Icons.sos, color: Colors.white, size: 30,),
                 ),
               ),
           ),
@@ -253,10 +255,10 @@ class _NavigationScreenState extends State<NavigationScreen> {
                   onPressed: () {
                     controller.callHelp();
                   },
-                  child: const Icon(Icons.call, color: Colors.white, size: 30,),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(100.0),
                   ),
+                  child: const Icon(Icons.call, color: Colors.white, size: 30,),
                 ),
               ),
           ),
@@ -421,7 +423,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
                   controller.messageController.clear();
                   Navigator.of(context).pop();
                 },
-                child: Text("SUBMIT", style: TextStyle(color: primary, fontSize: 15, fontWeight: FontWeight.w600),),
+                child: const Text("SUBMIT", style: TextStyle(color: primary, fontSize: 15, fontWeight: FontWeight.w600),),
               ),
             ],
           );

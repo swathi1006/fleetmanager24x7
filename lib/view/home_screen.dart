@@ -1,14 +1,14 @@
 import 'dart:convert';
-import 'dart:io';
+// import 'dart:io';
 
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/cupertino.dart';
+// import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
+// import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
+// import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../controller/home_controller.dart';
@@ -29,7 +29,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final HomeController controller = Get.find();
   LoginController loginController = Get.put(LoginController());
-  RxBool _obscureTextPin = true.obs;
+  final RxBool _obscureTextPin = true.obs;
   TextEditingController pinController = TextEditingController();
   int _index = 2;
   final carNumberController = TextEditingController();
@@ -74,47 +74,45 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: secondary,
-      body: controller.isinitloading.value?Center(child: CircularProgressIndicator(color: greenlight,)):
+      body: controller.isinitloading.value?const Center(child: CircularProgressIndicator(color: greenlight,)):
       SingleChildScrollView(
         child: Column(
           children: [
-            loginController.trips.length != 0? buildTripCard(): Padding(
-              padding: const EdgeInsets.symmetric(vertical:60),
+            loginController.trips.isNotEmpty? buildTripCard(): const Padding(
+              padding: EdgeInsets.symmetric(vertical:60),
               child: Center(child: Text("No trips assigned",style: TextStyle(color: greenlight),)),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             loginController.currentTrip != null ? buildCurrentTrip() : Container(),
             buildWorkChart(),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Container(
                 margin: const EdgeInsets.only(bottom: 20, left: 30, right: 30),
                 child: Divider(color: greenlight.withOpacity(.3), thickness: 1)),
             // loginController.user!.status == null ?
             loginController.currentTrip != null ?
             loginController.user!.status == null ?
-            Container(
-              child:Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children:[
-                  GestureDetector(
-                    onTap: () {
-                      // loginController.currentTrip == null ?
-                      //     createToastBottom("No trip to start") :
-                        showTakeAKeyOverLay();
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: greenlight,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Text("TAKE A CAR", style: const TextStyle(color:Colors.white, fontSize: 12, fontWeight: FontWeight.w700)),
-                      ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children:[
+                GestureDetector(
+                  onTap: () {
+                    // loginController.currentTrip == null ?
+                    //     createToastBottom("No trip to start") :
+                      showTakeAKeyOverLay();
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: greenlight,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(12.0),
+                      child: Text("TAKE A CAR", style: TextStyle(color:Colors.white, fontSize: 12, fontWeight: FontWeight.w700)),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ) :
             //resume trip
             Container(
@@ -130,16 +128,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: greenlight,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Text("RESUME TRIP", style: const TextStyle(color:Colors.white, fontSize: 12, fontWeight: FontWeight.w700)),
+                      child: const Padding(
+                        padding: EdgeInsets.all(12.0),
+                        child: Text("RESUME TRIP", style: TextStyle(color:Colors.white, fontSize: 12, fontWeight: FontWeight.w700)),
                       ),
                     ),
                   ),
                 ],
               ),
             ):Container(),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -163,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   children: [
                     const SizedBox(height: 20),
-                    Text(
+                    const Text(
                       'ENTER YOUR PIN',
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: primary),
                     ),
@@ -247,7 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget buildTripCard(){
     return Container(
       margin: const EdgeInsets.only(top: 20,bottom:30, left: 5, right: 5),
-      child: Container(
+      child: SizedBox(
         height: MediaQuery.of(context).size.width / 2.7, // Card height
         child: PageView.builder(
           itemCount: loginController.trips.length,
@@ -306,24 +304,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                       child: Row(
                                         children: [
                                           const Icon(Icons.calendar_today, color: Colors.white, size: 10,),
-                                          SizedBox(width: 3),
+                                          const SizedBox(width: 3),
                                           //Text(loginController.trips[index].tripDate, style: const TextStyle(color:Colors.white, fontSize: 10, fontWeight: FontWeight.w400)),
                                           Text(DateFormat('dd/MM/yy').format(loginController.trips[index].tripDate), style: const TextStyle(color:Colors.white, fontSize: 10, fontWeight: FontWeight.w400)),
                                         ],
                                       ),
                                     ),
                                   ),
-                                  SizedBox(height: 2),
+                                  const SizedBox(height: 2),
                                   Container(
                                     width: MediaQuery.of(context).size.width * 0.28,
                                     color: greenlight,
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 3.0),
+                                    child: const Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: 3.0),
                                       child: Row(
                                         children: [
-                                          const Icon(Icons.access_time_rounded, color: Colors.white, size: 10,),
+                                          Icon(Icons.access_time_rounded, color: Colors.white, size: 10,),
                                           SizedBox(width: 3),
-                                          Text("12:00AM- 6:00PM", style: const TextStyle(color:Colors.white, fontSize: 10, fontWeight: FontWeight.w400)),
+                                          Text("12:00AM- 6:00PM", style: TextStyle(color:Colors.white, fontSize: 10, fontWeight: FontWeight.w400)),
                                         ],
                                       ),
                                     ),
@@ -364,16 +362,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text("Trip No: ${loginController.currentTrip!.tripNumber}", style: const TextStyle(color:primary, fontWeight: FontWeight.w400)),
-                      SizedBox(height: 10,),
+                      const SizedBox(height: 10,),
                       SizedBox(
                         width: MediaQuery.of(context).size.width * 0.35,
                         child: Text(loginController.currentTrip!.tripStartLocation,
                             // overflow: TextOverflow.ellipsis,
                             maxLines: 2,
                             style: const TextStyle(fontSize:16,color:greenlight, fontWeight: FontWeight.w800)),),
-                      Text("${DateFormat('dd/MM/yy').format(loginController.currentTrip!.tripDate)}", style: const TextStyle(color:primary, fontWeight: FontWeight.w400, fontSize: 13)),
-                      Text("${DateFormat('hh:mm a').format(loginController.currentTrip!.tripDate)}", style: const TextStyle(color: primary, fontWeight: FontWeight.w400, fontSize: 13),),
-                      SizedBox(height: 15,),
+                      Text(DateFormat('dd/MM/yy').format(loginController.currentTrip!.tripDate), style: const TextStyle(color:primary, fontWeight: FontWeight.w400, fontSize: 13)),
+                      Text(DateFormat('hh:mm a').format(loginController.currentTrip!.tripDate), style: const TextStyle(color: primary, fontWeight: FontWeight.w400, fontSize: 13),),
+                      const SizedBox(height: 15,),
 
                       SizedBox(
                         width: MediaQuery.of(context).size.width * 0.35,
@@ -381,12 +379,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             // overflow: TextOverflow.ellipsis,
                           maxLines: 2,
                           style: const TextStyle(fontSize:16,color:greenlight, fontWeight: FontWeight.w800)),),
-                      Text("${DateFormat('dd/MM/yy').format(loginController.currentTrip!.tripEndTime)}", style: const TextStyle(color:primary, fontWeight: FontWeight.w400)),
-                      Text("${DateFormat('hh:mm a').format(loginController.currentTrip!.tripEndTime)}", style: const TextStyle(color: primary, fontWeight: FontWeight.w400),),
+                      Text(DateFormat('dd/MM/yy').format(loginController.currentTrip!.tripEndTime), style: const TextStyle(color:primary, fontWeight: FontWeight.w400)),
+                      Text(DateFormat('hh:mm a').format(loginController.currentTrip!.tripEndTime), style: const TextStyle(color: primary, fontWeight: FontWeight.w400),),
 
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Text(loginController.currentTrip!.tripType, style: const TextStyle(fontSize:12, color:primary, fontWeight: FontWeight.w400)),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       SizedBox(
                         width: MediaQuery.of(context).size.width * 0.35,
                           child: Text(loginController.currentTrip!.notification ?? "",
