@@ -61,27 +61,43 @@ class _NavigationScreenState extends State<NavigationScreen> {
   String? _currentPlaceSubThoroughfare;
   String? _currentPlaceThoroughfare;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   selectedVehicle = widget.vehicle;
-  //   _selectedLocation = selectedVehicle.vehicleLocation != null
-  //       ? LatLng(selectedVehicle.vehicleLocation!.latitude, selectedVehicle.vehicleLocation!.longitude)
-  //       : const LatLng(9.175249926873791, 76.5014099702239);
-  //   locationDetails();
-  //   //snackbarMessage("Please select the location on the map");
-  // }
+  GoogleMapController? _mapController; 
 
   @override
   void initState() {
     super.initState();
    
     selectedVehicle = widget.vehicle;
-    var locationService = LocationUpdateService(selectedVehicle.vehicleNumber);
+
+    var locationService = LocationUpdateService(selectedVehicle.vehicleNumber,
+        onLocationUpdate: (LatLng newLocation) {
+
+      setState(() {
+        _selectedLocation = newLocation; // Update map location
+      });
+
+      print('Updated _selectedLocation: Lat: ${_selectedLocation.latitude}, Lng: ${_selectedLocation.longitude}');
+
+      // YourMapService.updateMapLocation(newLocation.latitude, newLocation.longitude);
+
+       if (_mapController != null) {
+      _mapController!.animateCamera(
+        CameraUpdate.newLatLng(
+          LatLng(newLocation.latitude, newLocation.longitude),
+        ),
+      );
+      print("Map camera moved to new location.");
+    }
+
+    });
+    
+
     print(
         "Initializing LocationService for vehicle: ${selectedVehicle.vehicleNumber}");
+
+
    
-    locationService.updateInstantLocation();
+    locationService.updateInstantLocation(context);
 
     locationService.startPeriodicLocationUpdates();
 
@@ -96,7 +112,6 @@ class _NavigationScreenState extends State<NavigationScreen> {
   void dispose() {
     print("Disposing NavigationScreen and stopping location updates.");
     var locationService = LocationUpdateService(selectedVehicle.vehicleNumber);
-    // Stop location updates when navigating away or ending trip
     locationService.stopLocationUpdates();
     super.dispose();
   }
@@ -106,7 +121,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
     print("Trip is ending.");
     var locationService = LocationUpdateService(selectedVehicle.vehicleNumber);
 
-    // End trip logic
+    
     locationService.stopLocationUpdates();
   }
 
@@ -115,7 +130,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
         LocationUpdateService(selectedVehicle.vehicleNumber);
     selectedVehicle = widget.vehicle;
 
-    _locationUpdateService.pauseTrip();
+    _locationUpdateService.pauseTrip(context);
     
   }
 
@@ -228,7 +243,10 @@ class _NavigationScreenState extends State<NavigationScreen> {
           ),
           child: GoogleMap(
               onMapCreated: (GoogleMapController controller) {
+                _mapController = controller;
                 YourMapService.setMapController(controller);
+
+                print("Google Map Controller initialized.");
               },
               initialCameraPosition: CameraPosition(
                 target: _selectedLocation,

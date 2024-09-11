@@ -16,6 +16,7 @@ class YourMapService {
           LatLng(latitude, longitude),
         ),
       );
+      print("Map camera moved to new location.");
     }
   }
 }

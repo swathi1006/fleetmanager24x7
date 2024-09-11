@@ -1,20 +1,25 @@
 import 'dart:async';
 import 'package:fleet_manager_driver_app/service/gmap_service.dart';
+import 'package:flutter/material.dart';
 // import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:fleet_manager_driver_app/service/database.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class LocationUpdateService {
-  late String vehicleNumber;
 
-  LocationUpdateService(this.vehicleNumber);
+  late String vehicleNumber;
+  Function(LatLng)? onLocationUpdate; 
+
+  LocationUpdateService(this.vehicleNumber,{this.onLocationUpdate});
 
   Timer? _locationTimer;
   bool _isUpdating = false;
 
-  Future<void> updateInstantLocation() async {
+  Future<void> updateInstantLocation(BuildContext context) async {
      bool serviceEnabled;
   LocationPermission permission;
+
   serviceEnabled = await Geolocator.isLocationServiceEnabled();
   if (!serviceEnabled) {
     // Location services are not enabled don't continue
@@ -35,19 +40,28 @@ class LocationUpdateService {
       return Future.error('Location permissions are denied');
     }
   }
+
    if (permission == LocationPermission.deniedForever) {
     // Permissions are denied forever, handle appropriately. 
     return Future.error(
       'Location permissions are permanently denied, we cannot request permissions.');
   } 
+
+
   Position position = await Geolocator.getCurrentPosition(
       // ignore: deprecated_member_use
       desiredAccuracy: LocationAccuracy.high);
+
   double latitude = position.latitude;
   double longitude = position.longitude;
 
   await updateLocation(vehicleNumber, latitude, longitude);
+
   YourMapService.updateMapLocation(latitude, longitude);
+
+   if (onLocationUpdate != null) {
+      onLocationUpdate!(LatLng(latitude, longitude)); // Call the callback to update the map
+    }
 
   print({"Instant location updated,longitude:$longitude\n latitude: $latitude"});
 }
@@ -82,17 +96,10 @@ void startPeriodicLocationUpdates() {
   }
   }
 
-  void startTrip() {
-    updateInstantLocation();
+ 
+  void pauseTrip(BuildContext context) {
+    updateInstantLocation(context);
   }
 
-  void pauseTrip() {
-    updateInstantLocation();
-  }
-
-  void endTrip() {
-    stopLocationUpdates();
-    // Optionally update trip end time in the database
-    // YourDatabaseService.updateTripEndTime();
-  }
+  
 }
