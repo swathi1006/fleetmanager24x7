@@ -42,7 +42,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
   LoginController loginController = Get.put(LoginController());
 
   final RxBool _obscureTextPin = true.obs;
-  late final Vehicle selectedVehicle;
+  late  Vehicle selectedVehicle;
   final vehicleNumber = Vehicle;
   final odometerController = TextEditingController();
   final fuelController = TextEditingController();
@@ -75,15 +75,16 @@ class _NavigationScreenState extends State<NavigationScreen> {
   @override
   void initState() {
     super.initState();
-    // onTripStart;
-    print('navigation page opened');
+   
     selectedVehicle = widget.vehicle;
     var locationService = LocationUpdateService(selectedVehicle.vehicleNumber);
     print(
         "Initializing LocationService for vehicle: ${selectedVehicle.vehicleNumber}");
-    // Start location updates when starting/resuming the trip
-    locationService.startLocationUpdates();
-    print("Location updates started.");
+   
+    locationService.updateInstantLocation();
+
+    locationService.startPeriodicLocationUpdates();
+
     _selectedLocation = selectedVehicle.vehicleLocation != null
         ? LatLng(selectedVehicle.vehicleLocation!.latitude,
             selectedVehicle.vehicleLocation!.longitude)
@@ -100,12 +101,6 @@ class _NavigationScreenState extends State<NavigationScreen> {
     super.dispose();
   }
 
-// void onTripStart() {
-//   print("Trip is starting.");
-//   var locationService = LocationUpdateService(selectedVehicle.vehicleNumber);
-
-//   locationService.startLocationUpdates();
-// }
 
   void onTripEnd() {
     print("Trip is ending.");
@@ -121,7 +116,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
     selectedVehicle = widget.vehicle;
 
     _locationUpdateService.pauseTrip();
-    print("trip paused & updated location");
+    
   }
 
   double calculateTotalHours(DateTime startTime, DateTime endTime) {
