@@ -66,28 +66,19 @@ class _NavigationScreenState extends State<NavigationScreen> {
   @override
   void initState() {
     super.initState();
-   
+   print("starting location: $_selectedLocation");
     selectedVehicle = widget.vehicle;
 
     var locationService = LocationUpdateService(selectedVehicle.vehicleNumber,
         onLocationUpdate: (LatLng newLocation) {
 
-      setState(() {
         _selectedLocation = newLocation; // Update map location
-      });
-
+     
       print('Updated _selectedLocation: Lat: ${_selectedLocation.latitude}, Lng: ${_selectedLocation.longitude}');
 
-      // YourMapService.updateMapLocation(newLocation.latitude, newLocation.longitude);
+      YourMapService.updateMapLocation(newLocation.latitude, newLocation.longitude);
 
-       if (_mapController != null) {
-      _mapController!.animateCamera(
-        CameraUpdate.newLatLng(
-          LatLng(newLocation.latitude, newLocation.longitude),
-        ),
-      );
-      print("Map camera moved to new location.");
-    }
+       
 
     });
     
@@ -101,10 +92,14 @@ class _NavigationScreenState extends State<NavigationScreen> {
 
     locationService.startPeriodicLocationUpdates();
 
+    print('object:${selectedVehicle.vehicleLocation}');
+
     _selectedLocation = selectedVehicle.vehicleLocation != null
         ? LatLng(selectedVehicle.vehicleLocation!.latitude,
             selectedVehicle.vehicleLocation!.longitude)
         : const LatLng(9.175249926873791, 76.5014099702239);
+
+
     locationDetails();
   }
 
@@ -245,8 +240,10 @@ class _NavigationScreenState extends State<NavigationScreen> {
               onMapCreated: (GoogleMapController controller) {
                 _mapController = controller;
                 YourMapService.setMapController(controller);
+                YourMapService.updateMapLocation(_selectedLocation.latitude, _selectedLocation.longitude);
 
                 print("Google Map Controller initialized.");
+                print("current selected location:$_selectedLocation ");
               },
               initialCameraPosition: CameraPosition(
                 target: _selectedLocation,
