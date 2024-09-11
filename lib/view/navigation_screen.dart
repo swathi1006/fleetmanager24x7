@@ -1,7 +1,11 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:fleet_manager_driver_app/model/vehicle.dart';
+import 'package:fleet_manager_driver_app/service/gmap_service.dart';
+import 'package:fleet_manager_driver_app/service/location_update_services.dart';
 import 'package:fleet_manager_driver_app/utils/color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,12 +24,13 @@ import '../widget/toaster_message.dart';
 import 'main_screen.dart';
 
 class NavigationScreen extends StatefulWidget {
-  const NavigationScreen(this.vehicle,{super.key});
+  const NavigationScreen(this.vehicle, {super.key});
   final Vehicle vehicle;
 
   @override
   State<NavigationScreen> createState() => _NavigationScreenState();
 }
+
 Rx<File?> _imageFile = Rx<File?>(null);
 Rx<File?> _odometerimageFile = Rx<File?>(null);
 Rx<File?> _SOSimageFile = Rx<File?>(null);
@@ -33,14 +38,15 @@ Rx<File?> _SOSimageFile = Rx<File?>(null);
 String? _issueSelection;
 
 class _NavigationScreenState extends State<NavigationScreen> {
-
   NavigationController controller = Get.put(NavigationController());
   LoginController loginController = Get.put(LoginController());
 
   final RxBool _obscureTextPin = true.obs;
   late final Vehicle selectedVehicle;
+  final vehicleNumber = Vehicle;
   final odometerController = TextEditingController();
   final fuelController = TextEditingController();
+  // final LocationUpdateService _locationUpdateService = LocationUpdateService(vehicleNumber);
 
   LatLng _selectedLocation = const LatLng(9.175249926873791, 76.5014099702239);
   String? _currentPlaceName;
@@ -55,16 +61,67 @@ class _NavigationScreenState extends State<NavigationScreen> {
   String? _currentPlaceSubThoroughfare;
   String? _currentPlaceThoroughfare;
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   selectedVehicle = widget.vehicle;
+  //   _selectedLocation = selectedVehicle.vehicleLocation != null
+  //       ? LatLng(selectedVehicle.vehicleLocation!.latitude, selectedVehicle.vehicleLocation!.longitude)
+  //       : const LatLng(9.175249926873791, 76.5014099702239);
+  //   locationDetails();
+  //   //snackbarMessage("Please select the location on the map");
+  // }
 
   @override
   void initState() {
     super.initState();
+    // onTripStart;
+    print('navigation page opened');
     selectedVehicle = widget.vehicle;
+    var locationService = LocationUpdateService(selectedVehicle.vehicleNumber);
+    print(
+        "Initializing LocationService for vehicle: ${selectedVehicle.vehicleNumber}");
+    // Start location updates when starting/resuming the trip
+    locationService.startLocationUpdates();
+    print("Location updates started.");
     _selectedLocation = selectedVehicle.vehicleLocation != null
-        ? LatLng(selectedVehicle.vehicleLocation!.latitude, selectedVehicle.vehicleLocation!.longitude)
+        ? LatLng(selectedVehicle.vehicleLocation!.latitude,
+            selectedVehicle.vehicleLocation!.longitude)
         : const LatLng(9.175249926873791, 76.5014099702239);
     locationDetails();
-    //snackbarMessage("Please select the location on the map");
+  }
+
+  @override
+  void dispose() {
+    print("Disposing NavigationScreen and stopping location updates.");
+    var locationService = LocationUpdateService(selectedVehicle.vehicleNumber);
+    // Stop location updates when navigating away or ending trip
+    locationService.stopLocationUpdates();
+    super.dispose();
+  }
+
+// void onTripStart() {
+//   print("Trip is starting.");
+//   var locationService = LocationUpdateService(selectedVehicle.vehicleNumber);
+
+//   locationService.startLocationUpdates();
+// }
+
+  void onTripEnd() {
+    print("Trip is ending.");
+    var locationService = LocationUpdateService(selectedVehicle.vehicleNumber);
+
+    // End trip logic
+    locationService.stopLocationUpdates();
+  }
+
+  void onPauseTrip() {
+    final LocationUpdateService _locationUpdateService =
+        LocationUpdateService(selectedVehicle.vehicleNumber);
+    selectedVehicle = widget.vehicle;
+
+    _locationUpdateService.pauseTrip();
+    print("trip paused & updated location");
   }
 
   double calculateTotalHours(DateTime startTime, DateTime endTime) {
@@ -75,16 +132,20 @@ class _NavigationScreenState extends State<NavigationScreen> {
   void snackbarMessage(String message) {
     final snackBar = SnackBar(
       backgroundColor: secondary,
-      content: Text(message, style: GoogleFonts.lato(color: primary, fontSize: 15, fontWeight: FontWeight.w600)),
+      content: Text(
+        message,
+        style: GoogleFonts.lato(
+            color: primary, fontSize: 15, fontWeight: FontWeight.w600),
+      ),
     );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   Future<void> _onMapTapped(LatLng location) async {
-    await updateLocation(widget.vehicle.vehicleNumber, location.latitude, location.longitude);
-    List<Placemark> placemarks = await placemarkFromCoordinates(
-        location.latitude, location.longitude
-    );
+    await updateLocation(
+        widget.vehicle.vehicleNumber, location.latitude, location.longitude);
+    List<Placemark> placemarks =
+        await placemarkFromCoordinates(location.latitude, location.longitude);
     setState(() {
       _selectedLocation = location;
       _currentPlaceName = placemarks[0].name ?? "";
@@ -94,21 +155,18 @@ class _NavigationScreenState extends State<NavigationScreen> {
       _currentPlacePostalCode = placemarks[0].postalCode ?? "";
       _currentPlaceSubLocality = placemarks[0].subLocality ?? "";
       _currentPlaceLocality = placemarks[0].locality ?? "";
-      _currentPlaceSubAdministrativeArea = placemarks[0].subAdministrativeArea ?? "";
+      _currentPlaceSubAdministrativeArea =
+          placemarks[0].subAdministrativeArea ?? "";
       _currentPlaceIsoCountryCode = placemarks[0].isoCountryCode ?? "";
       _currentPlaceSubThoroughfare = placemarks[0].subThoroughfare ?? "";
       _currentPlaceThoroughfare = placemarks[0].thoroughfare ?? "";
-
-
-
     });
     print('Selected location: ${location.latitude}, ${location.longitude}');
   }
 
   Future<void> locationDetails() async {
     List<Placemark> placemarks = await placemarkFromCoordinates(
-        _selectedLocation.latitude, _selectedLocation.longitude
-    );
+        _selectedLocation.latitude, _selectedLocation.longitude);
     setState(() {
       _currentPlaceName = placemarks[0].name ?? "";
       _currentPlaceStreet = placemarks[0].street ?? "";
@@ -117,16 +175,13 @@ class _NavigationScreenState extends State<NavigationScreen> {
       _currentPlacePostalCode = placemarks[0].postalCode ?? "";
       _currentPlaceSubLocality = placemarks[0].subLocality ?? "";
       _currentPlaceLocality = placemarks[0].locality ?? "";
-      _currentPlaceSubAdministrativeArea = placemarks[0].subAdministrativeArea ?? "";
+      _currentPlaceSubAdministrativeArea =
+          placemarks[0].subAdministrativeArea ?? "";
       _currentPlaceIsoCountryCode = placemarks[0].isoCountryCode ?? "";
       _currentPlaceSubThoroughfare = placemarks[0].subThoroughfare ?? "";
       _currentPlaceThoroughfare = placemarks[0].thoroughfare ?? "";
-
-
-
     });
   }
-
 
   Future<void> _pickImage() async {
     final ImagePicker _picker = ImagePicker();
@@ -138,6 +193,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
       });
     }
   }
+
   Future<void> _pickImageSOS() async {
     final ImagePicker _picker = ImagePicker();
     final XFile? image = await _picker.pickImage(source: ImageSource.camera);
@@ -148,8 +204,6 @@ class _NavigationScreenState extends State<NavigationScreen> {
       });
     }
   }
-
-  
 
   Future<void> _pickOdometerImage() async {
     final ImagePicker _picker = ImagePicker();
@@ -162,70 +216,78 @@ class _NavigationScreenState extends State<NavigationScreen> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: secondary,
-      body: Container(
-        //margin: const EdgeInsets.only(top:10),
-        //height: MediaQuery.of(context).size.height*.65,
-        decoration: const BoxDecoration(
-          border: Border(
-            top: BorderSide(color: greenlight, width: 2),
-            left: BorderSide(color: greenlight, width: 2),
-            right: BorderSide(color: greenlight, width: 2),
-            bottom: BorderSide(color: greenlight, width: 2),
-          ),
-        ),
-        child: GoogleMap(
-          initialCameraPosition: CameraPosition(
-            target: _selectedLocation,
-            zoom: 15,
-          ),
-          onTap: _onMapTapped,
-          markers: {
-            Marker(
-              markerId: MarkerId('selected_location'),
-              position: _selectedLocation,
-              icon: BitmapDescriptor.defaultMarkerWithHue(
-                  BitmapDescriptor.hueRed),
-              infoWindow: InfoWindow(
-                title: '$_currentPlaceName',
-                snippet: 'Lat: ${_selectedLocation.latitude.toPrecision(
-                    2)}, Lng: ${_selectedLocation.longitude.toPrecision(2)}',
-              ),
+        backgroundColor: secondary,
+        body: Container(
+          //margin: const EdgeInsets.only(top:10),
+          //height: MediaQuery.of(context).size.height*.65,
+          decoration: const BoxDecoration(
+            border: Border(
+              top: BorderSide(color: greenlight, width: 2),
+              left: BorderSide(color: greenlight, width: 2),
+              right: BorderSide(color: greenlight, width: 2),
+              bottom: BorderSide(color: greenlight, width: 2),
             ),
-          }
+          ),
+          child: GoogleMap(
+              onMapCreated: (GoogleMapController controller) {
+                YourMapService.setMapController(controller);
+              },
+              initialCameraPosition: CameraPosition(
+                target: _selectedLocation,
+                zoom: 15,
+              ),
+              onTap: _onMapTapped,
+              markers: {
+                Marker(
+                  markerId: const MarkerId('selected_location'),
+                  position: _selectedLocation,
+                  icon: BitmapDescriptor.defaultMarkerWithHue(
+                      BitmapDescriptor.hueRed),
+                  infoWindow: InfoWindow(
+                    title: '$_currentPlaceName',
+                    snippet:
+                        'Lat: ${_selectedLocation.latitude.toPrecision(2)}, Lng: ${_selectedLocation.longitude.toPrecision(2)}',
+                  ),
+                ),
+              }),
         ),
-      ),
-      floatingActionButton: Stack(
-        children:<Widget> [
-          Positioned(
-            right: 5,
-            bottom: 50,
-            child: Container(
-                decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.transparent),
-                padding: const EdgeInsets.only(left:4,right:4,top:4,bottom:45),
+        floatingActionButton: Stack(
+          children: <Widget>[
+            Positioned(
+              right: 5,
+              bottom: 50,
+              child: Container(
+                decoration: const BoxDecoration(
+                    shape: BoxShape.circle, color: Colors.transparent),
+                padding: const EdgeInsets.only(
+                    left: 4, right: 4, top: 4, bottom: 45),
                 child: FloatingActionButton(
                   backgroundColor: primary,
                   onPressed: () {
                     showDetailOverLay();
                   },
-                  child: const Icon(Icons.menu_rounded, color: Colors.white, size: 30,),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(100.0),
                   ),
+                  child: const Icon(
+                    Icons.menu_rounded,
+                    color: Colors.white,
+                    size: 30,
+                  ),
                 ),
               ),
-          ),
-          Positioned(
-            right: 5,
-            bottom: 120,
-            child: Container(
-                decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.transparent),
-                padding: const EdgeInsets.only(left:4,right:4,top:4,bottom:45),
+            ),
+            Positioned(
+              right: 5,
+              bottom: 120,
+              child: Container(
+                decoration: const BoxDecoration(
+                    shape: BoxShape.circle, color: Colors.transparent),
+                padding: const EdgeInsets.only(
+                    left: 4, right: 4, top: 4, bottom: 45),
                 child: FloatingActionButton(
                   backgroundColor: Colors.red[700],
                   onPressed: () {
@@ -240,16 +302,22 @@ class _NavigationScreenState extends State<NavigationScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(100.0),
                   ),
-                  child: const Icon(Icons.sos, color: Colors.white, size: 30,),
+                  child: const Icon(
+                    Icons.sos,
+                    color: Colors.white,
+                    size: 30,
+                  ),
                 ),
               ),
-          ),
-          Positioned(
-            right: 5,
-            bottom: 190, // Adjust this value as needed
-            child: Container(
-                decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.transparent),
-                padding: const EdgeInsets.only(left:4,right:4,top:4,bottom:45),
+            ),
+            Positioned(
+              right: 5,
+              bottom: 190, // Adjust this value as needed
+              child: Container(
+                decoration: const BoxDecoration(
+                    shape: BoxShape.circle, color: Colors.transparent),
+                padding: const EdgeInsets.only(
+                    left: 4, right: 4, top: 4, bottom: 45),
                 child: FloatingActionButton(
                   backgroundColor: greenlight,
                   onPressed: () {
@@ -258,85 +326,173 @@ class _NavigationScreenState extends State<NavigationScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(100.0),
                   ),
-                  child: const Icon(Icons.call, color: Colors.white, size: 30,),
+                  child: const Icon(
+                    Icons.call,
+                    color: Colors.white,
+                    size: 30,
+                  ),
                 ),
               ),
-          ),
-          // Positioned(
-          //   right: 5,
-          //   bottom: 260, // Adjust this value as needed
-          //   child: Container(
-          //     decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.transparent),
-          //     padding: const EdgeInsets.only(left:4,right:4,top:4,bottom:45),
-          //     child: FloatingActionButton(
-          //       backgroundColor: Colors.white,
-          //       onPressed: () {
-          //         showDialog(
-          //           context: context,
-          //           builder: (BuildContext context) {
-          //             return WidgetbuildLocation();
-          //           },
-          //         );
-          //       },
-          //       child: const Icon(Icons.location_pin, color: Colors.red, size: 30,),
-          //       shape: RoundedRectangleBorder(
-          //         borderRadius: BorderRadius.circular(100.0),
-          //       ),
-          //     ),
-          //   ),
-          // ),
-        ],
-      )
-    );
+            ),
+            // Positioned(
+            //   right: 5,
+            //   bottom: 260, // Adjust this value as needed
+            //   child: Container(
+            //     decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.transparent),
+            //     padding: const EdgeInsets.only(left:4,right:4,top:4,bottom:45),
+            //     child: FloatingActionButton(
+            //       backgroundColor: Colors.white,
+            //       onPressed: () {
+            //         showDialog(
+            //           context: context,
+            //           builder: (BuildContext context) {
+            //             return WidgetbuildLocation();
+            //           },
+            //         );
+            //       },
+            //       child: const Icon(Icons.location_pin, color: Colors.red, size: 30,),
+            //       shape: RoundedRectangleBorder(
+            //         borderRadius: BorderRadius.circular(100.0),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+          ],
+        ));
   }
 
-  WidgetbuildLocation(){
-    return SingleChildScrollView(
-        child: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return AlertDialog(
-                backgroundColor: secondary,
-                title: Center(child: Text("LOCATION", style: GoogleFonts.lato(color: primary, fontSize: 18, fontWeight: FontWeight.w700))),
-                content: Column(
-                  children: [
-                    _currentPlaceName == ''?SizedBox(height: 0,):Text(_currentPlaceName!,style: TextStyle(color: greenlight),),
-                    _currentPlaceStreet == ''?SizedBox(height: 0,):Text(_currentPlaceStreet!,style: TextStyle(color: greenlight),),
-                    _currentPlacePostalCode == ''?SizedBox(height: 0,):Text(_currentPlacePostalCode!,style: TextStyle(color: greenlight),),
-                    _currentPlaceSubLocality == ''?SizedBox(height: 0,):Text(_currentPlaceSubLocality!,style: TextStyle(color: greenlight),),
-                    _currentPlaceLocality == ''?SizedBox(height: 0,):Text(_currentPlaceLocality!,style: TextStyle(color: greenlight),),
-                    _currentPlaceSubAdministrativeArea == ''?SizedBox(height: 0,):Text(_currentPlaceSubAdministrativeArea!,style: TextStyle(color: greenlight),),
-                    _currentPlaceSubThoroughfare == ''?SizedBox(height: 0,):Text(_currentPlaceSubThoroughfare!,style: TextStyle(color: greenlight),),
-                    Row(mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _currentPlaceAdministrativeArea == ''?SizedBox(height: 0,):Text('${_currentPlaceAdministrativeArea!},',style: TextStyle(color: greenlight),),
-                          SizedBox(width: 5,),
-                          _currentPlaceCountry == ''?SizedBox(height: 0,):Text(_currentPlaceCountry!,style: TextStyle(color: greenlight),),
-                          SizedBox(width: 5,),
-                          _currentPlaceIsoCountryCode == ''?SizedBox(height: 0,):Text('(${_currentPlaceIsoCountryCode!})',style: TextStyle(color: greenlight),),
-                        ]
-                    ),
-                  ],
-                ),
-                  actions: [
-                  TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    },
-                    child: Text("Ok", style: TextStyle(color: greenlight, fontSize: 15, fontWeight: FontWeight.w600),),
+  // ignore: non_constant_identifier_names
+  WidgetbuildLocation() {
+    return SingleChildScrollView(child:
+        StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
+      return AlertDialog(
+        backgroundColor: secondary,
+        title: Center(
+            child: Text("LOCATION",
+                style: GoogleFonts.lato(
+                    color: primary,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700))),
+        content: Column(
+          children: [
+            _currentPlaceName == ''
+                ? const SizedBox(
+                    height: 0,
+                  )
+                : Text(
+                    _currentPlaceName!,
+                    style: const TextStyle(color: greenlight),
                   ),
-                  ],
-              );
-            }
-        )
-    );
+            _currentPlaceStreet == ''
+                ? const SizedBox(
+                    height: 0,
+                  )
+                : Text(
+                    _currentPlaceStreet!,
+                    style: const TextStyle(color: greenlight),
+                  ),
+            _currentPlacePostalCode == ''
+                ? const SizedBox(
+                    height: 0,
+                  )
+                : Text(
+                    _currentPlacePostalCode!,
+                    style: const TextStyle(color: greenlight),
+                  ),
+            _currentPlaceSubLocality == ''
+                ? const SizedBox(
+                    height: 0,
+                  )
+                : Text(
+                    _currentPlaceSubLocality!,
+                    style: const TextStyle(color: greenlight),
+                  ),
+            _currentPlaceLocality == ''
+                ? const SizedBox(
+                    height: 0,
+                  )
+                : Text(
+                    _currentPlaceLocality!,
+                    style: const TextStyle(color: greenlight),
+                  ),
+            _currentPlaceSubAdministrativeArea == ''
+                ? const SizedBox(
+                    height: 0,
+                  )
+                : Text(
+                    _currentPlaceSubAdministrativeArea!,
+                    style: const TextStyle(color: greenlight),
+                  ),
+            _currentPlaceSubThoroughfare == ''
+                ? const SizedBox(
+                    height: 0,
+                  )
+                : Text(
+                    _currentPlaceSubThoroughfare!,
+                    style: const TextStyle(color: greenlight),
+                  ),
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              _currentPlaceAdministrativeArea == ''
+                  ? const SizedBox(
+                      height: 0,
+                    )
+                  : Text(
+                      '${_currentPlaceAdministrativeArea!},',
+                      style: const TextStyle(color: greenlight),
+                    ),
+              const SizedBox(
+                width: 5,
+              ),
+              _currentPlaceCountry == ''
+                  ? const SizedBox(
+                      height: 0,
+                    )
+                  : Text(
+                      _currentPlaceCountry!,
+                      style: const TextStyle(color: greenlight),
+                    ),
+              const SizedBox(
+                width: 5,
+              ),
+              _currentPlaceIsoCountryCode == ''
+                  ? const SizedBox(
+                      height: 0,
+                    )
+                  : Text(
+                      '(${_currentPlaceIsoCountryCode!})',
+                      style: const TextStyle(color: greenlight),
+                    ),
+            ]),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text(
+              "Ok",
+              style: TextStyle(
+                  color: greenlight, fontSize: 15, fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      );
+    }));
   }
+
   Widget buildSosAlert() {
     return SingleChildScrollView(
       child: StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
           return AlertDialog(
             backgroundColor: secondary,
-            title: Center(child: Text("SOS ALERT", style: GoogleFonts.lato(color: primary, fontSize: 18, fontWeight: FontWeight.w700))),
+            title: Center(
+                child: Text("SOS ALERT",
+                    style: GoogleFonts.lato(
+                        color: primary,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700))),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -345,24 +501,26 @@ class _NavigationScreenState extends State<NavigationScreen> {
                   controller: controller.messageController,
                   decoration: InputDecoration(
                     labelText: 'Enter your message',
-                    labelStyle: TextStyle(color: primary, fontSize: 13, fontWeight: FontWeight.w500),
+                    labelStyle: const TextStyle(
+                        color: primary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500),
                     enabledBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: primary.withOpacity(.7)),
                     ),
-                    focusedBorder: UnderlineInputBorder(
+                    focusedBorder: const UnderlineInputBorder(
                       borderSide: BorderSide(color: primary),
                     ),
                   ),
                 ),
-                SizedBox(height: 20,),
-
-                Obx(() =>
-                _SOSimageFile.value != null
-                    ?
-                Image.file(_SOSimageFile.value!)
-                    : Container(),
+                const SizedBox(
+                  height: 20,
                 ),
-
+                Obx(
+                  () => _SOSimageFile.value != null
+                      ? Image.file(_SOSimageFile.value!)
+                      : Container(),
+                ),
                 Center(
                   child: ElevatedButton(
                     style: ButtonStyle(
@@ -376,11 +534,18 @@ class _NavigationScreenState extends State<NavigationScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.add_a_photo_rounded, color: Colors.white, size: 18,),
+                        const Icon(
+                          Icons.add_a_photo_rounded,
+                          color: Colors.white,
+                          size: 18,
+                        ),
                         const SizedBox(width: 10),
                         Text(
                           'ADD  IMAGE',
-                          style: GoogleFonts.lato(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
+                          style: GoogleFonts.lato(
+                              fontSize: 12,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -394,14 +559,21 @@ class _NavigationScreenState extends State<NavigationScreen> {
                   _imageFile = Rx<File?>(null);
                   Navigator.of(context).pop();
                 },
-                child: Text("CANCEL", style: TextStyle(color: primary, fontSize: 15, fontWeight: FontWeight.w600),),
+                child: const Text(
+                  "CANCEL",
+                  style: TextStyle(
+                      color: primary,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600),
+                ),
               ),
-
               TextButton(
                 onPressed: () async {
-                  if(controller.messageController.text!='' && _SOSimageFile != null) {
+                  if (controller.messageController.text != '' &&
+                      _SOSimageFile != null) {
                     try {
-                      final Uint8List bytes = await _SOSimageFile.value!.readAsBytes();
+                      final Uint8List bytes =
+                          await _SOSimageFile.value!.readAsBytes();
                       String base64Image = base64Encode(bytes);
                       await reportIssue(
                           loginController.currentTrip!.tripNumber,
@@ -410,7 +582,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
                           "SOS",
                           controller.messageController.text,
                           base64Image);
-                    }catch(e){
+                    } catch (e) {
                       print("Error ${e}");
                     }
 
@@ -423,7 +595,13 @@ class _NavigationScreenState extends State<NavigationScreen> {
                   controller.messageController.clear();
                   Navigator.of(context).pop();
                 },
-                child: const Text("SUBMIT", style: TextStyle(color: primary, fontSize: 15, fontWeight: FontWeight.w600),),
+                child: const Text(
+                  "SUBMIT",
+                  style: TextStyle(
+                      color: primary,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600),
+                ),
               ),
             ],
           );
@@ -432,36 +610,45 @@ class _NavigationScreenState extends State<NavigationScreen> {
     );
   }
 
-
   Widget buildStopAlert() {
     return SingleChildScrollView(
       child: StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
           return AlertDialog(
             backgroundColor: secondary,
-            title: Center(child: Text("STOP", style: GoogleFonts.lato(color: primary, fontSize: 18, fontWeight: FontWeight.w700))),
+            title: Center(
+                child: Text("STOP",
+                    style: GoogleFonts.lato(
+                        color: primary,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700))),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TextFormField(
-                controller: odometerController,
-                keyboardType: TextInputType.number,
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.digitsOnly
-                ],
-                decoration: InputDecoration(
-                  labelText: "Odometer Reading",
-                  labelStyle: TextStyle(color: primary, fontSize: 13,fontWeight: FontWeight.w500),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: primary.withOpacity(.7)),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: primary),
+                  controller: odometerController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
+                  decoration: InputDecoration(
+                    labelText: "Odometer Reading",
+                    labelStyle: const TextStyle(
+                        color: primary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: primary.withOpacity(.7)),
+                    ),
+                    focusedBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(color: primary),
+                    ),
                   ),
                 ),
-              ),
-                SizedBox(height: 10,),
+                const SizedBox(
+                  height: 10,
+                ),
                 TextFormField(
                   controller: fuelController,
                   keyboardType: TextInputType.number,
@@ -470,22 +657,25 @@ class _NavigationScreenState extends State<NavigationScreen> {
                   ],
                   decoration: InputDecoration(
                     labelText: 'Fuel Level',
-                    labelStyle: TextStyle(color: primary, fontSize: 13, fontWeight: FontWeight.w500),
+                    labelStyle: const TextStyle(
+                        color: primary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500),
                     enabledBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: primary.withOpacity(.7)),
                     ),
-                    focusedBorder: UnderlineInputBorder(
+                    focusedBorder: const UnderlineInputBorder(
                       borderSide: BorderSide(color: primary),
                     ),
                   ),
                 ),
-                SizedBox(height: 20,),
-
-                Obx(() =>
-                _odometerimageFile.value != null
-                    ?
-                Image.file(_odometerimageFile.value!)
-                    : Container(),
+                const SizedBox(
+                  height: 20,
+                ),
+                Obx(
+                  () => _odometerimageFile.value != null
+                      ? Image.file(_odometerimageFile.value!)
+                      : Container(),
                 ),
                 Center(
                   child: ElevatedButton(
@@ -500,26 +690,39 @@ class _NavigationScreenState extends State<NavigationScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.add_a_photo_rounded, color: Colors.white, size: 18,),
+                        const Icon(
+                          Icons.add_a_photo_rounded,
+                          color: Colors.white,
+                          size: 18,
+                        ),
                         const SizedBox(width: 10),
                         Text(
                           'ODOMETER  IMAGE',
-                          style: GoogleFonts.lato(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
+                          style: GoogleFonts.lato(
+                              fontSize: 12,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
                   ),
                 ),
-                SizedBox(height: 15,),
-
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Text('Do you want to report any issues?', style: TextStyle(color: primary, fontWeight: FontWeight.w500)),
+                const SizedBox(
+                  height: 15,
+                ),
+                const Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: Text('Do you want to report any issues?',
+                      style: TextStyle(
+                          color: primary, fontWeight: FontWeight.w500)),
                 ),
                 RadioListTile<String>(
-                  title: const Text('Yes', style: TextStyle(color: primary,fontSize: 14, fontWeight: FontWeight.w500)),
+                  title: const Text('Yes',
+                      style: TextStyle(
+                          color: primary,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500)),
                   value: 'yes',
-
                   groupValue: _issueSelection,
                   onChanged: (value) {
                     setState(() {
@@ -528,7 +731,11 @@ class _NavigationScreenState extends State<NavigationScreen> {
                   },
                 ),
                 RadioListTile<String>(
-                  title: const Text('No', style: TextStyle(color: primary,fontSize: 14, fontWeight: FontWeight.w500)),
+                  title: const Text('No',
+                      style: TextStyle(
+                          color: primary,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500)),
                   value: 'no',
                   groupValue: _issueSelection,
                   onChanged: (value) {
@@ -542,24 +749,26 @@ class _NavigationScreenState extends State<NavigationScreen> {
                     controller: controller.issueController,
                     decoration: InputDecoration(
                       labelText: 'Enter your issue',
-                      labelStyle: TextStyle(color: primary, fontSize: 13, fontWeight: FontWeight.w500),
+                      labelStyle: const TextStyle(
+                          color: primary,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500),
                       enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: primary.withOpacity(.7)),
                       ),
-                      focusedBorder: UnderlineInputBorder(
+                      focusedBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(color: primary),
                       ),
                     ),
                   ),
-                  SizedBox(height: 20,),
-
-                  Obx(() =>
-                  _imageFile.value != null
-                      ?
-                  Image.file(_imageFile.value!)
-                      : Container(),
+                  const SizedBox(
+                    height: 20,
                   ),
-
+                  Obx(
+                    () => _imageFile.value != null
+                        ? Image.file(_imageFile.value!)
+                        : Container(),
+                  ),
                   Center(
                     child: ElevatedButton(
                       style: ButtonStyle(
@@ -573,11 +782,18 @@ class _NavigationScreenState extends State<NavigationScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.add_a_photo_rounded, color: Colors.white, size: 18,),
+                          const Icon(
+                            Icons.add_a_photo_rounded,
+                            color: Colors.white,
+                            size: 18,
+                          ),
                           const SizedBox(width: 10),
                           Text(
                             'SCRATCH  IMAGE',
-                            style: GoogleFonts.lato(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
+                            style: GoogleFonts.lato(
+                                fontSize: 12,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
@@ -592,21 +808,29 @@ class _NavigationScreenState extends State<NavigationScreen> {
                   odometerController.clear();
                   fuelController.clear();
                   controller.issueController.clear();
-                   _odometerimageFile = Rx<File?>(null);
+                  _odometerimageFile = Rx<File?>(null);
                   _imageFile = Rx<File?>(null);
                   Navigator.of(context).pop();
                 },
-                child: Text("CANCEL", style: TextStyle(color: primary, fontSize: 15, fontWeight: FontWeight.w600),),
+                child: const Text(
+                  "CANCEL",
+                  style: TextStyle(
+                      color: primary,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600),
+                ),
               ),
               TextButton(
                 onPressed: () async {
-                  if(odometerController.text!='' && fuelController.text!='' && _odometerimageFile != null) {
+                  if (odometerController.text != '' &&
+                      fuelController.text != '' &&
+                      _odometerimageFile != null) {
                     bool pinValidity = await showCheckPinOverLay();
                     if (pinValidity) {
                       if (_issueSelection == 'yes') {
                         try {
-                          final Uint8List bytes = await _imageFile.value!
-                              .readAsBytes();
+                          final Uint8List bytes =
+                              await _imageFile.value!.readAsBytes();
                           String base64Image = base64Encode(bytes);
                           await reportIssue(
                               loginController.currentTrip!.tripNumber,
@@ -620,28 +844,31 @@ class _NavigationScreenState extends State<NavigationScreen> {
                         }
                       }
                       print("trip issues updated..................");
-                      try{
-                        final Uint8List bytes = await _odometerimageFile.value!.readAsBytes();
-                        String base64Image = base64Encode(
-                            bytes);
-                          await updateVehicleReading(
-                              selectedVehicle.vehicleNumber,
-                              odometerController.text);
-                          print('updateVehicleReading....................');
-                        await updateKeyCustody(selectedVehicle.vehicleNumber, 'Available');
+                      try {
+                        final Uint8List bytes =
+                            await _odometerimageFile.value!.readAsBytes();
+                        String base64Image = base64Encode(bytes);
+                        await updateVehicleReading(
+                            selectedVehicle.vehicleNumber,
+                            odometerController.text);
+                        print('updateVehicleReading....................');
+                        await updateKeyCustody(
+                            selectedVehicle.vehicleNumber, 'Available');
                         print('updateKeyCustody...........................');
                         await updateTripEnd(
-                              loginController.currentTrip!.tripNumber,
-                              odometerController.text,
-                              fuelController.text,
-                              base64Image);
+                            loginController.currentTrip!.tripNumber,
+                            odometerController.text,
+                            fuelController.text,
+                            base64Image);
                         print('updateTripEnd..............................');
-                        await updateTripEndTime(loginController.currentTrip!.tripNumber);
+                        await updateTripEndTime(
+                            loginController.currentTrip!.tripNumber);
                         print("updateTripEndTime...........................");
-                        loginController.currentTrip!.tripEndTimeDriver = DateTime.now();
-                          selectedVehicle.odometerReading = int.parse(odometerController.text);
-                      }
-                      catch(e){
+                        loginController.currentTrip!.tripEndTimeDriver =
+                            DateTime.now();
+                        selectedVehicle.odometerReading =
+                            int.parse(odometerController.text);
+                      } catch (e) {
                         print(e);
                       }
                       await updateTripStatus(
@@ -651,13 +878,14 @@ class _NavigationScreenState extends State<NavigationScreen> {
                           loginController.currentTrip!.tripStartTimeDriver!,
                           DateTime.now());
                       // int.parse(loginController.chartData!.totalHours.toString())
-                      loginController.chartData!.totalHours+=result;
+                      loginController.chartData!.totalHours += result;
 
-                      print('Total hours: ${loginController.chartData!.totalHours}');
+                      print(
+                          'Total hours: ${loginController.chartData!.totalHours}');
                       // print('Total hours: ${loginController.chartData!.totalHours.runtimeType}');
 
                       await updateChartData(
-                        loginController.user!.id,
+                          loginController.user!.id,
                           loginController.chartData!.totalHours,
                           DateTime.now());
                       print("updateChartData............................");
@@ -666,11 +894,17 @@ class _NavigationScreenState extends State<NavigationScreen> {
                       _imageFile = Rx<File?>(null);
                       Get.offAll(() => MainScreen());
                     }
-                  } else{
+                  } else {
                     createToastBottom('Please fill all the fields');
                   }
                 },
-                child: Text("SUBMIT", style: TextStyle(color: primary, fontSize: 15, fontWeight: FontWeight.w600),),
+                child: const Text(
+                  "SUBMIT",
+                  style: TextStyle(
+                      color: primary,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600),
+                ),
               ),
             ],
           );
@@ -678,7 +912,6 @@ class _NavigationScreenState extends State<NavigationScreen> {
       ),
     );
   }
-
 
   Future<bool> showCheckPinOverLay() async {
     bool isValidPin = false;
@@ -698,9 +931,12 @@ class _NavigationScreenState extends State<NavigationScreen> {
                 child: Column(
                   children: [
                     const SizedBox(height: 20),
-                    Text(
+                    const Text(
                       'ENTER YOUR PIN',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: primary),
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: primary),
                     ),
                     const SizedBox(height: 20),
                     Container(
@@ -709,8 +945,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
                         borderRadius: BorderRadius.circular(30),
                         color: greenlight.withOpacity(.1),
                       ),
-                      child: Obx(() =>
-                          TextFormField(
+                      child: Obx(() => TextFormField(
                             controller: controller.pinController,
                             obscureText: _obscureTextPin.value,
                             maxLength: 4,
@@ -724,7 +959,10 @@ class _NavigationScreenState extends State<NavigationScreen> {
                               prefixIconColor: primary,
                               border: InputBorder.none,
                               labelText: 'PIN',
-                              labelStyle: const TextStyle(color: primary, fontSize: 15, fontWeight: FontWeight.w600),
+                              labelStyle: const TextStyle(
+                                  color: primary,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600),
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _obscureTextPin.value
@@ -735,8 +973,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
                                 onPressed: () => _obscureTextPin.toggle(),
                               ),
                             ),
-                          )
-                      ),
+                          )),
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton(
@@ -748,7 +985,8 @@ class _NavigationScreenState extends State<NavigationScreen> {
                         ),
                       ),
                       onPressed: () async {
-                        if (int.parse(controller.pinController.text) == loginController.user!.pin) {
+                        if (int.parse(controller.pinController.text) ==
+                            loginController.user!.pin) {
                           isValidPin = true;
                           Get.back();
                         } else {
@@ -757,7 +995,11 @@ class _NavigationScreenState extends State<NavigationScreen> {
                           isValidPin = false;
                         }
                       },
-                      child: const Text('SUBMIT', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600)),
+                      child: const Text('SUBMIT',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600)),
                     ),
                     const SizedBox(height: 20),
                   ],
@@ -788,7 +1030,8 @@ class _NavigationScreenState extends State<NavigationScreen> {
                   ),
                 ),
                 child: Container(
-                  margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -797,53 +1040,73 @@ class _NavigationScreenState extends State<NavigationScreen> {
                         children: [
                           ClipRRect(
                               borderRadius: BorderRadius.circular(25),
-                              child: Image.memory(base64Decode(selectedVehicle.vehiclePhoto), height: 130, width: 130)),
+                              child: Image.memory(
+                                  base64Decode(selectedVehicle.vehiclePhoto),
+                                  height: 130,
+                                  width: 130)),
                         ],
                       ),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            width: Get.width*.5,
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                            width: Get.width * .5,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 8),
                             decoration: BoxDecoration(
                               color: greenlight.withOpacity(.1),
                               borderRadius: BorderRadius.circular(30),
                             ),
-                            child:Row(
-                                children:[
-                                  Icon(Icons.location_pin, color: greenlight, size: 25),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(_currentPlaceSubAdministrativeArea!=''?_currentPlaceSubAdministrativeArea!:_currentPlaceSubLocality!=''?_currentPlaceSubLocality!:_currentPlaceLocality!, style: TextStyle(color: primary, fontSize: 18, fontWeight: FontWeight.w600),
-                                        maxLines: 2, overflow: TextOverflow.ellipsis),
-                                  ),
-                                ]
-                            ),
+                            child: Row(children: [
+                              const Icon(Icons.location_pin,
+                                  color: greenlight, size: 25),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                    _currentPlaceSubAdministrativeArea != ''
+                                        ? _currentPlaceSubAdministrativeArea!
+                                        : _currentPlaceSubLocality != ''
+                                            ? _currentPlaceSubLocality!
+                                            : _currentPlaceLocality!,
+                                    style: const TextStyle(
+                                        color: primary,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis),
+                              ),
+                            ]),
                           ),
                           const SizedBox(height: 15),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               ElevatedButton(
-                                  onPressed: () async {
-                                    bool pinValidity = await showCheckPinOverLay();
-                                    if(pinValidity) {
-                                      await updateTripStatus(loginController.user!.userName, loginController.currentTrip!.tripNumber);
-                                      Get.offAll(() => MainScreen());
-                                    }
-
-
-                                  },
-                                  style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty.all(greenlight),
-                                    elevation: MaterialStateProperty.all(5),
-                                  ),
-                                  child: const Text('PAUSE', style: TextStyle(color: Colors.white),)),
-
+                                onPressed: () async {
+                                  bool pinValidity =
+                                      await showCheckPinOverLay();
+                                  if (pinValidity) {
+                                    await updateTripStatus(
+                                        loginController.user!.userName,
+                                        loginController
+                                            .currentTrip!.tripNumber);
+                                    onPauseTrip();
+                                    Get.offAll(() => MainScreen());
+                                  }
+                                },
+                                style: ButtonStyle(
+                                  backgroundColor:
+                                      MaterialStateProperty.all(greenlight),
+                                  elevation: MaterialStateProperty.all(5),
+                                ),
+                                child: const Text(
+                                  'PAUSE',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
                               const SizedBox(width: 20),
                               ElevatedButton(
-                                  onPressed: (){
+                                  onPressed: () {
                                     // print("Dashboard");
                                     showDialog(
                                       context: context,
@@ -851,15 +1114,19 @@ class _NavigationScreenState extends State<NavigationScreen> {
                                         return buildStopAlert();
                                       },
                                     );
+                                    onTripEnd();
                                   },
                                   style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty.all(primary),
+                                    backgroundColor:
+                                        MaterialStateProperty.all(primary),
                                     elevation: MaterialStateProperty.all(5),
                                   ),
-                                  child: const Text('STOP', style: TextStyle(color: Colors.white),)),
+                                  child: const Text(
+                                    'STOP',
+                                    style: TextStyle(color: Colors.white),
+                                  )),
                             ],
                           ),
-
                         ],
                       ),
                     ],
@@ -873,5 +1140,4 @@ class _NavigationScreenState extends State<NavigationScreen> {
       isScrollControlled: true,
     );
   }
-
 }

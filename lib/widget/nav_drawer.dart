@@ -16,8 +16,8 @@ class NavDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        decoration: BoxDecoration(
-          borderRadius: const BorderRadius.only(topRight: Radius.circular(30), bottomRight: Radius.circular(30)),
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.only(topRight: Radius.circular(30), bottomRight: Radius.circular(30)),
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -56,7 +56,7 @@ class NavDrawer extends StatelessWidget {
                           const SizedBox(height: 5),
                           Text(
                             loginController.user!.name !=null?loginController.user!.name:'',
-                            style: TextStyle(fontSize:18, color: Colors.white70, fontWeight: FontWeight.w600),
+                            style: const TextStyle(fontSize:18, color: Colors.white70, fontWeight: FontWeight.w600),
                           ),
                           const Divider(
                             thickness: 1.5,

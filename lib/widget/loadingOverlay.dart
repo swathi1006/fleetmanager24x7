@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class LoadingOverlay {
   static final _overlayEntry = OverlayEntry(
-    builder: (context) => Positioned.fill(
+    builder: (context) => const Positioned.fill(
       child: Material(
         color: Colors.black54,
         child: Center(
