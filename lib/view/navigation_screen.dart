@@ -46,6 +46,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
   final vehicleNumber = Vehicle;
   final odometerController = TextEditingController();
   final fuelController = TextEditingController();
+   bool? mapEnabled ;
   // final LocationUpdateService _locationUpdateService = LocationUpdateService(vehicleNumber);
 
   LatLng _selectedLocation = const LatLng(9.175249926873791, 76.5014099702239);
@@ -61,33 +62,77 @@ class _NavigationScreenState extends State<NavigationScreen> {
   String? _currentPlaceSubThoroughfare;
   String? _currentPlaceThoroughfare;
 
-  GoogleMapController? _mapController; 
+  GoogleMapController? _mapController;
 
   @override
   void initState() {
     super.initState();
    print("starting location: $_selectedLocation");
     selectedVehicle = widget.vehicle;
+    _initializeLocationService();
 
+    // var locationService = LocationUpdateService(selectedVehicle.vehicleNumber,
+    //     onLocationUpdate: (LatLng newLocation) {
+    //
+    //     _selectedLocation = newLocation; // Update map location
+    //
+    //   print('Updated _selectedLocation: Lat: ${_selectedLocation.latitude}, Lng: ${_selectedLocation.longitude}');
+    //
+    //   YourMapService.updateMapLocation(newLocation.latitude, newLocation.longitude);
+    //
+    //
+    //
+    // });
+    // //mapEnabled = locationService.updateInstantLocation(context) as bool;
+    //
+    // print(
+    //     "Initializing LocationService for vehicle: ${selectedVehicle.vehicleNumber}");
+    //
+    //
+    //
+    // locationService.updateInstantLocation(context);
+    //
+    // locationService.startPeriodicLocationUpdates();
+    //
+    // print('object:${selectedVehicle.vehicleLocation}');
+    //
+    // _selectedLocation = selectedVehicle.vehicleLocation != null
+    //     ? LatLng(selectedVehicle.vehicleLocation!.latitude,
+    //         selectedVehicle.vehicleLocation!.longitude)
+    //     : const LatLng(9.175249926873791, 76.5014099702239);
+    //
+    //
+    // locationDetails();
+
+  }
+
+  Future<void> _initializeLocationService() async {
+        mapEnabled = false;
     var locationService = LocationUpdateService(selectedVehicle.vehicleNumber,
         onLocationUpdate: (LatLng newLocation) {
 
-        _selectedLocation = newLocation; // Update map location
-     
-      print('Updated _selectedLocation: Lat: ${_selectedLocation.latitude}, Lng: ${_selectedLocation.longitude}');
+          _selectedLocation = newLocation; // Update map location
 
-      YourMapService.updateMapLocation(newLocation.latitude, newLocation.longitude);
+          print('Updated _selectedLocation: Lat: ${_selectedLocation.latitude}, Lng: ${_selectedLocation.longitude}');
 
-       
+          YourMapService.updateMapLocation(newLocation.latitude, newLocation.longitude);
 
-    });
-    
+
+
+        });
+    //mapEnabled = locationService.updateInstantLocation(context) as bool;
+
+        bool locationEnabled = await locationService.updateInstantLocation(context);
+        setState(() {
+          mapEnabled = locationEnabled;// Now assign the result to mapEnabled
+          print("\tmapEnabled = $mapEnabled");
+        });
 
     print(
-        "Initializing LocationService for vehicle: ${selectedVehicle.vehicleNumber}");
+        "\nInitializing LocationService for vehicle: ${selectedVehicle.vehicleNumber}");
 
 
-   
+
     locationService.updateInstantLocation(context);
 
     locationService.startPeriodicLocationUpdates();
@@ -96,12 +141,17 @@ class _NavigationScreenState extends State<NavigationScreen> {
 
     _selectedLocation = selectedVehicle.vehicleLocation != null
         ? LatLng(selectedVehicle.vehicleLocation!.latitude,
-            selectedVehicle.vehicleLocation!.longitude)
+        selectedVehicle.vehicleLocation!.longitude)
         : const LatLng(9.175249926873791, 76.5014099702239);
 
 
     locationDetails();
+
+
+
+
   }
+
 
   @override
   void dispose() {
@@ -225,7 +275,9 @@ class _NavigationScreenState extends State<NavigationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: secondary,
-        body: Container(
+        body: mapEnabled == false ? Center(child: CircularProgressIndicator(),) :
+
+        Container(
           //margin: const EdgeInsets.only(top:10),
           //height: MediaQuery.of(context).size.height*.65,
           decoration: const BoxDecoration(

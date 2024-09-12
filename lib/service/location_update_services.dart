@@ -16,7 +16,7 @@ class LocationUpdateService {
   Timer? _locationTimer;
   bool _isUpdating = false;
 
-  Future<void> updateInstantLocation(BuildContext context) async {
+  Future<bool> updateInstantLocation(BuildContext context) async {
      bool serviceEnabled;
   LocationPermission permission;
 
@@ -64,6 +64,8 @@ class LocationUpdateService {
     }
 
   print({"Instant location updated,longitude:$longitude\n latitude: $latitude"});
+
+   return serviceEnabled;
 }
 
 
