@@ -1,5 +1,4 @@
 import 'package:fleet_manager_driver_app/model/scratch.dart';
-import 'package:fleet_manager_driver_app/model/tempvehicle.dart';
 import 'package:fleet_manager_driver_app/service/global.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +7,6 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:mongo_dart/mongo_dart.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/vehicle.dart';
 import '../utils/color.dart';

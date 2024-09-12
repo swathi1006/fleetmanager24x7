@@ -7,6 +7,8 @@ import 'package:fleet_manager_driver_app/model/vehicle.dart';
 import 'package:fleet_manager_driver_app/service/gmap_service.dart';
 import 'package:fleet_manager_driver_app/service/location_update_services.dart';
 import 'package:fleet_manager_driver_app/utils/color.dart';
+import 'package:fleet_manager_driver_app/widget/dialogue_show.dart';
+import 'package:fleet_manager_driver_app/widget/loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
@@ -42,11 +44,11 @@ class _NavigationScreenState extends State<NavigationScreen> {
   LoginController loginController = Get.put(LoginController());
 
   final RxBool _obscureTextPin = true.obs;
-  late  Vehicle selectedVehicle;
+  late Vehicle selectedVehicle;
   final vehicleNumber = Vehicle;
   final odometerController = TextEditingController();
   final fuelController = TextEditingController();
-   bool? mapEnabled ;
+  bool mapEnabled =false;
   // final LocationUpdateService _locationUpdateService = LocationUpdateService(vehicleNumber);
 
   LatLng _selectedLocation = const LatLng(9.175249926873791, 76.5014099702239);
@@ -67,91 +69,57 @@ class _NavigationScreenState extends State<NavigationScreen> {
   @override
   void initState() {
     super.initState();
-   print("starting location: $_selectedLocation");
+    print("starting location: $_selectedLocation");
     selectedVehicle = widget.vehicle;
     _initializeLocationService();
-
-    // var locationService = LocationUpdateService(selectedVehicle.vehicleNumber,
-    //     onLocationUpdate: (LatLng newLocation) {
-    //
-    //     _selectedLocation = newLocation; // Update map location
-    //
-    //   print('Updated _selectedLocation: Lat: ${_selectedLocation.latitude}, Lng: ${_selectedLocation.longitude}');
-    //
-    //   YourMapService.updateMapLocation(newLocation.latitude, newLocation.longitude);
-    //
-    //
-    //
-    // });
-    // //mapEnabled = locationService.updateInstantLocation(context) as bool;
-    //
-    // print(
-    //     "Initializing LocationService for vehicle: ${selectedVehicle.vehicleNumber}");
-    //
-    //
-    //
-    // locationService.updateInstantLocation(context);
-    //
-    // locationService.startPeriodicLocationUpdates();
-    //
-    // print('object:${selectedVehicle.vehicleLocation}');
-    //
-    // _selectedLocation = selectedVehicle.vehicleLocation != null
-    //     ? LatLng(selectedVehicle.vehicleLocation!.latitude,
-    //         selectedVehicle.vehicleLocation!.longitude)
-    //     : const LatLng(9.175249926873791, 76.5014099702239);
-    //
-    //
-    // locationDetails();
-
   }
+ 
+
 
   Future<void> _initializeLocationService() async {
-        mapEnabled = false;
+
     var locationService = LocationUpdateService(selectedVehicle.vehicleNumber,
         onLocationUpdate: (LatLng newLocation) {
+      _selectedLocation = newLocation; // Update map location
 
-          _selectedLocation = newLocation; // Update map location
+      print(
+          'Updated _selectedLocation: Lat: ${_selectedLocation.latitude}, Lng: ${_selectedLocation.longitude}');
 
-          print('Updated _selectedLocation: Lat: ${_selectedLocation.latitude}, Lng: ${_selectedLocation.longitude}');
-
-          YourMapService.updateMapLocation(newLocation.latitude, newLocation.longitude);
-
-
-
-        });
+      YourMapService.updateMapLocation(
+          newLocation.latitude, newLocation.longitude);
+    });
     //mapEnabled = locationService.updateInstantLocation(context) as bool;
 
-        bool locationEnabled = await locationService.updateInstantLocation(context);
-        setState(() {
-          mapEnabled = locationEnabled;// Now assign the result to mapEnabled
-          print("\tmapEnabled = $mapEnabled");
-        });
+    bool locationEnabled = await locationService.updateInstantLocation(context);
+    setState(() {
+      mapEnabled = locationEnabled; // Now assign the result to mapEnabled
+      print("\tmapEnabled = $mapEnabled");
+    });
 
     print(
         "\nInitializing LocationService for vehicle: ${selectedVehicle.vehicleNumber}");
 
-
-
+    // ignore: use_build_context_synchronously
     locationService.updateInstantLocation(context);
 
     locationService.startPeriodicLocationUpdates();
 
-    print('object:${selectedVehicle.vehicleLocation}');
+    if (selectedVehicle.vehicleLocation!=null) {
+      print('object:${selectedVehicle.vehicleLocation}');
+    print('object2:${selectedVehicle.vehicleLocation!.latitude}');
+    print('object:3${selectedVehicle.vehicleLocation!.longitude}');
+      
+    }
+
+
 
     _selectedLocation = selectedVehicle.vehicleLocation != null
         ? LatLng(selectedVehicle.vehicleLocation!.latitude,
-        selectedVehicle.vehicleLocation!.longitude)
+            selectedVehicle.vehicleLocation!.longitude)
         : const LatLng(9.175249926873791, 76.5014099702239);
 
-
     locationDetails();
-
-
-
-
   }
-
 
   @override
   void dispose() {
@@ -161,12 +129,10 @@ class _NavigationScreenState extends State<NavigationScreen> {
     super.dispose();
   }
 
-
   void onTripEnd() {
     print("Trip is ending.");
     var locationService = LocationUpdateService(selectedVehicle.vehicleNumber);
 
-    
     locationService.stopLocationUpdates();
   }
 
@@ -176,7 +142,6 @@ class _NavigationScreenState extends State<NavigationScreen> {
     selectedVehicle = widget.vehicle;
 
     _locationUpdateService.pauseTrip(context);
-    
   }
 
   double calculateTotalHours(DateTime startTime, DateTime endTime) {
@@ -275,47 +240,49 @@ class _NavigationScreenState extends State<NavigationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: secondary,
-        body: mapEnabled == false ? Center(child: CircularProgressIndicator(),) :
-
-        Container(
-          //margin: const EdgeInsets.only(top:10),
-          //height: MediaQuery.of(context).size.height*.65,
-          decoration: const BoxDecoration(
-            border: Border(
-              top: BorderSide(color: greenlight, width: 2),
-              left: BorderSide(color: greenlight, width: 2),
-              right: BorderSide(color: greenlight, width: 2),
-              bottom: BorderSide(color: greenlight, width: 2),
-            ),
-          ),
-          child: GoogleMap(
-              onMapCreated: (GoogleMapController controller) {
-                _mapController = controller;
-                YourMapService.setMapController(controller);
-                YourMapService.updateMapLocation(_selectedLocation.latitude, _selectedLocation.longitude);
-
-                print("Google Map Controller initialized.");
-                print("current selected location:$_selectedLocation ");
-              },
-              initialCameraPosition: CameraPosition(
-                target: _selectedLocation,
-                zoom: 15,
-              ),
-              onTap: _onMapTapped,
-              markers: {
-                Marker(
-                  markerId: const MarkerId('selected_location'),
-                  position: _selectedLocation,
-                  icon: BitmapDescriptor.defaultMarkerWithHue(
-                      BitmapDescriptor.hueRed),
-                  infoWindow: InfoWindow(
-                    title: '$_currentPlaceName',
-                    snippet:
-                        'Lat: ${_selectedLocation.latitude.toPrecision(2)}, Lng: ${_selectedLocation.longitude.toPrecision(2)}',
+        body: mapEnabled == false
+            ? const Loader()
+            : Container(
+                //margin: const EdgeInsets.only(top:10),
+                //height: MediaQuery.of(context).size.height*.65,
+                decoration: const BoxDecoration(
+                  border: Border(
+                    top: BorderSide(color: greenlight, width: 2),
+                    left: BorderSide(color: greenlight, width: 2),
+                    right: BorderSide(color: greenlight, width: 2),
+                    bottom: BorderSide(color: greenlight, width: 2),
                   ),
                 ),
-              }),
-        ),
+                child: GoogleMap(
+                    onMapCreated: (GoogleMapController controller) {
+                      _mapController = controller;
+                      YourMapService.setMapController(controller);
+                      YourMapService.updateMapLocation(
+                          _selectedLocation.latitude,
+                          _selectedLocation.longitude);
+
+                      print("Google Map Controller initialized.");
+                      print("current selected location:$_selectedLocation ");
+                    },
+                    initialCameraPosition: CameraPosition(
+                      target: _selectedLocation,
+                      zoom: 15,
+                    ),
+                    onTap: _onMapTapped,
+                    markers: {
+                      Marker(
+                        markerId: const MarkerId('selected_location'),
+                        position: _selectedLocation,
+                        icon: BitmapDescriptor.defaultMarkerWithHue(
+                            BitmapDescriptor.hueRed),
+                        infoWindow: InfoWindow(
+                          title: '$_currentPlaceName',
+                          snippet:
+                              'Lat: ${_selectedLocation.latitude.toPrecision(2)}, Lng: ${_selectedLocation.longitude.toPrecision(2)}',
+                        ),
+                      ),
+                    }),
+              ),
         floatingActionButton: Stack(
           children: <Widget>[
             Positioned(
@@ -329,12 +296,16 @@ class _NavigationScreenState extends State<NavigationScreen> {
                 child: FloatingActionButton(
                   backgroundColor: primary,
                   onPressed: () {
-                    showDetailOverLay();
+                    mapEnabled ?  
+
+                    showDetailOverLay() :
+                     CustomDialog.showLocationDisabledDialog(context);
                   },
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(100.0),
                   ),
-                  child: const Icon(
+                  child:
+                   const Icon(
                     Icons.menu_rounded,
                     color: Colors.white,
                     size: 30,
