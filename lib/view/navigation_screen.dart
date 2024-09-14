@@ -161,28 +161,28 @@ class _NavigationScreenState extends State<NavigationScreen> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-  Future<void> _onMapTapped(LatLng location) async {
-    await updateLocation(
-        widget.vehicle.vehicleNumber, location.latitude, location.longitude);
-    List<Placemark> placemarks =
-        await placemarkFromCoordinates(location.latitude, location.longitude);
-    setState(() {
-      _selectedLocation = location;
-      _currentPlaceName = placemarks[0].name ?? "";
-      _currentPlaceStreet = placemarks[0].street ?? "";
-      _currentPlaceAdministrativeArea = placemarks[0].administrativeArea ?? "";
-      _currentPlaceCountry = placemarks[0].country ?? "";
-      _currentPlacePostalCode = placemarks[0].postalCode ?? "";
-      _currentPlaceSubLocality = placemarks[0].subLocality ?? "";
-      _currentPlaceLocality = placemarks[0].locality ?? "";
-      _currentPlaceSubAdministrativeArea =
-          placemarks[0].subAdministrativeArea ?? "";
-      _currentPlaceIsoCountryCode = placemarks[0].isoCountryCode ?? "";
-      _currentPlaceSubThoroughfare = placemarks[0].subThoroughfare ?? "";
-      _currentPlaceThoroughfare = placemarks[0].thoroughfare ?? "";
-    });
-    print('Selected location: ${location.latitude}, ${location.longitude}');
-  }
+  // Future<void> _onMapTapped(LatLng location) async {
+  //   await updateLocation(
+  //       widget.vehicle.vehicleNumber, location.latitude, location.longitude);
+  //   List<Placemark> placemarks =
+  //       await placemarkFromCoordinates(location.latitude, location.longitude);
+  //   setState(() {
+  //     _selectedLocation = location;
+  //     _currentPlaceName = placemarks[0].name ?? "";
+  //     _currentPlaceStreet = placemarks[0].street ?? "";
+  //     _currentPlaceAdministrativeArea = placemarks[0].administrativeArea ?? "";
+  //     _currentPlaceCountry = placemarks[0].country ?? "";
+  //     _currentPlacePostalCode = placemarks[0].postalCode ?? "";
+  //     _currentPlaceSubLocality = placemarks[0].subLocality ?? "";
+  //     _currentPlaceLocality = placemarks[0].locality ?? "";
+  //     _currentPlaceSubAdministrativeArea =
+  //         placemarks[0].subAdministrativeArea ?? "";
+  //     _currentPlaceIsoCountryCode = placemarks[0].isoCountryCode ?? "";
+  //     _currentPlaceSubThoroughfare = placemarks[0].subThoroughfare ?? "";
+  //     _currentPlaceThoroughfare = placemarks[0].thoroughfare ?? "";
+  //   });
+  //   print('Selected location: ${location.latitude}, ${location.longitude}');
+  // }
 
   Future<void> locationDetails() async {
     List<Placemark> placemarks = await placemarkFromCoordinates(
@@ -268,7 +268,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
                       target: _selectedLocation,
                       zoom: 15,
                     ),
-                    onTap: _onMapTapped,
+                    // onTap: _onMapTapped,
                     markers: {
                       Marker(
                         markerId: const MarkerId('selected_location'),
@@ -299,7 +299,8 @@ class _NavigationScreenState extends State<NavigationScreen> {
                     mapEnabled ?  
 
                     showDetailOverLay() :
-                     CustomDialog.showLocationDisabledDialog(context);
+                    CustomDialog(selectedVehicle).showLocationDisabledDialog(context);
+                     
                   },
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(100.0),
