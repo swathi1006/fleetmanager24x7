@@ -856,6 +856,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
               ),
               TextButton(
                 onPressed: () async {
+                  onPauseTrip();
                   if (odometerController.text != '' &&
                       fuelController.text != '' &&
                       _odometerimageFile != null) {

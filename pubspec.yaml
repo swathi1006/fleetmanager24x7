@@ -50,6 +50,7 @@ dependencies:
   geocoding: ^3.0.0
   flutter_image_compress: ^2.3.0
   geolocator: ^13.0.1
+  lottie: ^3.1.2
   
 #  geolocator: ^10.1.1
 
@@ -90,6 +91,8 @@ flutter:
     - assets/profileimg/
     - assets/cars/
     - assets/graph/
+    - assets/animations/
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

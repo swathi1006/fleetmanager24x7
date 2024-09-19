@@ -17,6 +17,7 @@ class YourMapService {
         ),
       );
       print("Map camera moved to new location.");
+      
     }
   }
 }

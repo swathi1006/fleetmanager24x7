@@ -111,7 +111,7 @@ class CarDetailController extends GetxController {
                 child: Column(
                   children: [
                     const SizedBox(height: 20),
-                    Text(
+                    const Text(
                       'ENTER YOUR PIN',
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: primary),
                     ),

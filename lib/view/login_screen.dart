@@ -1,6 +1,8 @@
 import 'package:fleet_manager_driver_app/utils/color.dart';
+import 'package:fleet_manager_driver_app/widget/loader.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../controller/login_controller.dart';
 import '../widget/toaster_message.dart';
 import 'main_screen.dart';
@@ -12,6 +14,7 @@ class LoginScreen extends StatelessWidget {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final RxBool _obscureText = true.obs;
+  RxBool isloader = false.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -137,8 +140,7 @@ class LoginScreen extends StatelessWidget {
                       const SizedBox(height: 20),
                       Obx(
                         () => Padding(
-                          padding:
-                              const EdgeInsets.symmetric(horizontal: 10.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
                           child: TextFormField(
                             controller: passwordController,
                             validator: (value) {
@@ -183,48 +185,77 @@ class LoginScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      SizedBox(
-                          //height: 50, // specify the height
-                          width: 40, // specify the width
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ElevatedButton(
-                                style: ButtonStyle(
-                                  elevation: MaterialStateProperty.all(5),
-                                  backgroundColor:
-                                      MaterialStateProperty.all(primary),
+                      Obx(() {
+                        // Show CircularProgressIndicator if loading, otherwise show the button
+                        return isloader.value
+                            ? const Center(child: Loader())
+                            : SizedBox(
+                                width: 40,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    ElevatedButton(
+                                      style: ButtonStyle(
+                                        elevation: MaterialStateProperty.all(5),
+                                        backgroundColor:
+                                            MaterialStateProperty.all(primary),
+                                      ),
+                                      onPressed: () async {
+                                        // Show "This takes some time" message
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              'This may take a moment...',
+                                              
+                                              style: GoogleFonts.lato(
+                                                  color: secondary,
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                          ),
+                                        );
+
+                                        // Set loading state to true
+                                        isloader.value = true;
+
+                                        bool isuser = await controller.login(
+                                            usernameController,
+                                            passwordController);
+                                        if (isuser) {
+                                          if (controller.user!.pin != null) {
+                                            // Wait until the loading is complete
+                                            while (controller.isloading.value) {
+                                              await Future.delayed(
+                                                  const Duration(seconds: 1));
+                                            }
+                                            // Navigate to MainScreen
+                                            Get.offAll(() => MainScreen());
+                                          } else {
+                                            usernameController.clear();
+                                            passwordController.clear();
+                                            controller.showSetPinOverLay();
+                                          }
+                                        } else {
+                                          createToastTop(
+                                              'Invalid username or password');
+                                        }
+
+                                        // Set loading state to false after the process
+                                        isloader.value = false;
+                                      },
+                                      child: const Text(
+                                        'Login',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                onPressed: () async {
-                                  bool isuser = await controller.login(
-                                      usernameController, passwordController);
-                                  if (isuser) {
-                                    if (controller.user!.pin != null) {
-                                      while (controller.isloading.value) {
-                                        await Future.delayed(
-                                            const Duration(seconds: 1));
-                                      }
-                                      Get.offAll(() => MainScreen());
-                                    } else {
-                                      usernameController.clear();
-                                      passwordController.clear();
-                                      controller.showSetPinOverLay();
-                                    }
-                                  } else {
-                                    createToastTop(
-                                        'Invalid username or password');
-                                  }
-                                },
-                                child: const Text(
-                                  'Login',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                              ),
-                            ],
-                          )),
+                              );
+                      }),
                       const SizedBox(height: 20),
                     ],
                   ),

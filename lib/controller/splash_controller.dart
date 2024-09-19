@@ -1,3 +1,4 @@
+import 'package:fleet_manager_driver_app/widget/loader.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,30 +10,27 @@ import '../view/main_screen.dart';
 import '../widget/toaster_message.dart';
 import 'login_controller.dart';
 
-
 class SplashController extends GetxController {
-
   LoginController loginController = Get.put(LoginController());
   RxDouble opacity = RxDouble(0.0);
   TextEditingController pinController = TextEditingController();
   RxBool _obscureText = true.obs;
-
+  RxBool isloader = false.obs;
 
   @override
-  onInit(){
+  onInit() {
     super.onInit();
     animateLogo();
   }
 
   animateLogo() async {
     await Future.delayed(Duration.zero);
-    opacity.value=1;
+    opacity.value = 1;
     await Future.delayed(const Duration(seconds: 3));
     loginController.isLoggedIn.value
         ? showSetPinOverLay()
         : Get.offAll(() => LoginScreen());
   }
-
 
   showSetPinOverLay() async {
     Get.bottomSheet(
@@ -51,11 +49,13 @@ class SplashController extends GetxController {
                 child: Column(
                   children: [
                     const SizedBox(height: 20),
-                    Text(
+                    const Text(
                       'ENTER YOUR PIN',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: primary),
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: primary),
                     ),
-
                     const SizedBox(height: 20),
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -63,8 +63,7 @@ class SplashController extends GetxController {
                         borderRadius: BorderRadius.circular(30),
                         color: greenlight.withOpacity(.1),
                       ),
-                      child: Obx(() =>
-                          TextFormField(
+                      child: Obx(() => TextFormField(
                             controller: pinController,
                             obscureText: _obscureText.value,
                             maxLength: 4,
@@ -78,7 +77,10 @@ class SplashController extends GetxController {
                               prefixIconColor: primary,
                               border: InputBorder.none,
                               labelText: 'PIN',
-                              labelStyle: const TextStyle(color: primary, fontSize: 15, fontWeight: FontWeight.w600),
+                              labelStyle: const TextStyle(
+                                  color: primary,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600),
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _obscureText.value
@@ -89,36 +91,45 @@ class SplashController extends GetxController {
                                 onPressed: () => _obscureText.toggle(),
                               ),
                             ),
-                          )
-                      ),
+                          )),
                     ),
-
                     const SizedBox(height: 20),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        elevation: 5,
-                        backgroundColor: greenlight,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                      onPressed: () async {
-                        if (loginController.user!.pin == int.parse(pinController.text)) {
-                          while (loginController.isloading.value) {
-                            await Future.delayed(Duration(seconds: 1));
-                          }
-                          Get.offAll(() => MainScreen());
-                        } else {
-                          print('Incorrect PIN');
-                          createToastTop('Incorrect PIN');
-                        }
-                      },
-                      child: const Text('SUBMIT', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600)),
-                    ),
+                    Obx(() {
+                      return isloader.value
+                          ? const Center(child: Loader())
+                          : ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                elevation: 5,
+                                backgroundColor: greenlight,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              onPressed: () async {
+                                isloader.value = true;
+
+                                if (loginController.user!.pin ==
+                                    int.parse(pinController.text)) {
+                                  while (loginController.isloading.value) {
+                                    await Future.delayed(Duration(seconds: 1));
+                                  }
+                                  Get.offAll(() => MainScreen());
+                                } else {
+                                  print('Incorrect PIN');
+                                  createToastTop('Incorrect PIN');
+                                }
+                                isloader.value = false;
+                              },
+                              child: const Text('SUBMIT',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600)),
+                            );
+                    }),
                     const SizedBox(height: 20),
                   ],
                 ),
-
               ),
             );
           },
