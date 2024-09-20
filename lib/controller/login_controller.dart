@@ -23,8 +23,8 @@ class LoginController extends GetxController{
   RxBool isLoggedIn = false.obs;
   final pinController1 = TextEditingController();
   final pinController2 = TextEditingController();
-  RxBool _obscureText1 = true.obs;
-  RxBool _obscureText2 = true.obs;
+  final RxBool _obscureText1 = true.obs;
+  final RxBool _obscureText2 = true.obs;
   RxList<Trip> trips = RxList.empty();
   RxList<Vehicle> vehicles = RxList.empty();
   RxBool isloading = false.obs;
@@ -40,40 +40,36 @@ class LoginController extends GetxController{
       print(prefs.getString('userName')!);
       loggedInUserId = prefs.getString('id')!;
 
-    if (loggedInUserId != null) {
-      var driver = await collection_drivers?.findOne(where.eq('_id', ObjectId.parse(loggedInUserId)));
+    var driver = await collection_drivers?.findOne(where.eq('_id', ObjectId.parse(loggedInUserId)));
 
-    // var driver = await collection_drivers?.findOne(where.eq('_id', ObjectId.parse(loggedInUserId)));
-      if (driver != null) {
-        isLoggedIn(true);
-        print("driver adding started................");
-        List<String> trips = [];
-        for (var trip in driver['trips']) {
-        trips.add(trip.toHexString());
-      }
-        user = User(
-            driver['_id'].toHexString(),
-            driver['driverId'],
-            driver['driverPassword'],
-            driver['driverPin'],
-            driver['driverName'],
-            driver['mobileNumber'],
-            driver['location'],
-            driver['driverLicenceNumber'],
-            driver['driverLicenceExpiryDate'],
-            driver['driverPhoto'],
-            driver['notes'],
-            driver['status'],
-            trips,
-        );
-        print("driver Adder............");
-      }
-    isLoggedIn(true);
-    fetchTripsAndVehicles();
-    } else {
-      print('User ID not found in SharedPreferences');
+  // var driver = await collection_drivers?.findOne(where.eq('_id', ObjectId.parse(loggedInUserId)));
+    if (driver != null) {
+      isLoggedIn(true);
+      print("driver adding started................");
+      List<String> trips = [];
+      for (var trip in driver['trips']) {
+      trips.add(trip.toHexString());
     }
-}
+      user = User(
+          driver['_id'].toHexString(),
+          driver['driverId'],
+          driver['driverPassword'],
+          driver['driverPin'],
+          driver['driverName'],
+          driver['mobileNumber'],
+          driver['location'],
+          driver['driverLicenceNumber'],
+          driver['driverLicenceExpiryDate'],
+          driver['driverPhoto'],
+          driver['notes'],
+          driver['status'],
+          trips,
+      );
+      print("driver Adder............");
+    }
+  isLoggedIn(true);
+  fetchTripsAndVehicles();
+  }
 
   Future<void> fetchTripsAndVehicles() async {
     // var globalTrips = await collection_trips
@@ -269,43 +265,74 @@ class LoginController extends GetxController{
     }
   }
 
-  login(usernameController, passwordController) async {
-    isloading(true);
+  login(TextEditingController usernameController, TextEditingController passwordController, RxDouble progress) async {
+  try {
+    isloading(true);  // Start the loading process
+    progress.value = 0.1; // Initial progress when starting the login process
+
+    // Simulate a network delay (optional)
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    // Fetching the driver data from MongoDB
     var driver = await collection_drivers?.findOne(where.eq('driverId', usernameController.text));
-      if (driver != null){
-        if (usernameController.text==driver['driverId'] && passwordController.text==driver['driverPassword']){
-          loggedInUserId = driver['_id'].toHexString();
-          List<String> trips = [];
-          for (var trip in driver['trips']) {
-            trips.add(trip.toHexString());
-          }
-          user = User(
-            driver['_id'].toHexString(),
-            driver['driverId'],
-            driver['driverPassword'],
-            driver['driverPin'],
-            driver['driverName'],
-            driver['mobileNumber'],
-            driver['location'],
-            driver['driverLicenceNumber'],
-            driver['driverLicenceExpiryDate'],
-            driver['driverPhoto'],
-            driver['notes'],
-            driver['status'],
-            trips,
-          );
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString('userName', usernameController.text);
-          prefs.setString('password', passwordController.text);
-          prefs.setString('id', loggedInUserId);
-          fetchTripsAndVehicles();
-          return true;
+
+    progress.value = 0.3; // Progress after fetching data
+
+    if (driver != null) {
+      if (usernameController.text == driver['driverId'] && passwordController.text == driver['driverPassword']) {
+        loggedInUserId = driver['_id'].toHexString();
+
+        progress.value = 0.5; // Progress after successful login credentials check
+
+        // Extract trips
+        List<String> trips = [];
+        for (var trip in driver['trips']) {
+          trips.add(trip.toHexString());
         }
+
+        // Update the user model
+        user = User(
+          driver['_id'].toHexString(),
+          driver['driverId'],
+          driver['driverPassword'],
+          driver['driverPin'],
+          driver['driverName'],
+          driver['mobileNumber'],
+          driver['location'],
+          driver['driverLicenceNumber'],
+          driver['driverLicenceExpiryDate'],
+          driver['driverPhoto'],
+          driver['notes'],
+          driver['status'],
+          trips,
+        );
+
+        progress.value = 0.7; // Progress after updating the user model
+
+        // Storing login details in SharedPreferences
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('userName', usernameController.text);
+        prefs.setString('password', passwordController.text);
+        prefs.setString('id', loggedInUserId);
+
+        progress.value = 0.9; // Progress after saving data in SharedPreferences
+
+        // Fetch trips and vehicles
+        await fetchTripsAndVehicles(); // Make sure this function is async if it performs an async operation
+
+        progress.value = 1.0; // Progress reaches 100% when everything is complete
+
+        return true;
       }
+    }
 
+    progress.value = 1.0; // If login fails, set progress to 100% and return false
     return false;
-
+  } finally {
+    isloading(false); // Stop the loader
   }
+}
+
 
 
   showSetPinOverLay() async {
@@ -325,7 +352,7 @@ class LoginController extends GetxController{
                 child: Column(
                   children: [
                     const SizedBox(height: 20),
-                     Text(
+                     const Text(
                     'SET SECURITY PIN',
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: primary),
                     ),

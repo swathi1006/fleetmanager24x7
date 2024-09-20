@@ -1,5 +1,4 @@
 import 'package:fleet_manager_driver_app/utils/color.dart';
-import 'package:fleet_manager_driver_app/widget/loader.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,7 +13,8 @@ class LoginScreen extends StatelessWidget {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final RxBool _obscureText = true.obs;
-  RxBool isloader = false.obs;
+  RxBool isLoader = false.obs;
+  RxDouble progress = 0.0.obs; // Progress value for the loading indicator
 
   @override
   Widget build(BuildContext context) {
@@ -186,9 +186,40 @@ class LoginScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
                       Obx(() {
-                        // Show CircularProgressIndicator if loading, otherwise show the button
-                        return isloader.value
-                            ? const Center(child: Loader())
+                        return isLoader.value
+                            ? Column(
+                                children: [
+                                  const SizedBox(height: 10),
+
+                                  // Linear progress bar for showing the loading progress
+                                  Obx(() => Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 70, right: 70, bottom: 18),
+                                        child: LinearProgressIndicator(
+                                          value: progress.value,
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          minHeight: 20,
+                                          backgroundColor: Colors.grey.shade300,
+                                          valueColor:
+                                              const AlwaysStoppedAnimation<
+                                                  Color>(primary),
+                                        ),
+                                        
+                                      ),
+                                      ),
+                                  // const SizedBox(height: 10),
+
+                                  // Showing percentage text for the loading
+                                  Obx(() => Text(
+                                        '${(progress.value * 100).toInt()}%',
+                                        style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                      ),
+                                ],
+                              )
                             : SizedBox(
                                 width: 40,
                                 child: Row(
@@ -196,12 +227,16 @@ class LoginScreen extends StatelessWidget {
                                   children: [
                                     ElevatedButton(
                                       style: ButtonStyle(
-                                        elevation: MaterialStateProperty.all(5),
+                                        elevation: WidgetStateProperty.all(5),
                                         backgroundColor:
-                                            MaterialStateProperty.all(primary),
+                                            WidgetStateProperty.all(primary),
                                       ),
                                       onPressed: () async {
-                                        // Show "This takes some time" message
+
+                                        // Reset the loading state and progress
+                                        isLoader.value = true;
+                                        progress.value = 0.0;
+
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
                                           SnackBar(
@@ -216,33 +251,32 @@ class LoginScreen extends StatelessWidget {
                                           ),
                                         );
 
-                                        // Set loading state to true
-                                        isloader.value = true;
-
-                                        bool isuser = await controller.login(
+                                        // Start login process and pass progress observable
+                                        bool isUser = await controller.login(
                                             usernameController,
-                                            passwordController);
-                                        if (isuser) {
-                                          if (controller.user!.pin != null) {
-                                            // Wait until the loading is complete
-                                            while (controller.isloading.value) {
-                                              await Future.delayed(
-                                                  const Duration(seconds: 1));
-                                            }
-                                            // Navigate to MainScreen
-                                            Get.offAll(() => MainScreen());
-                                          } else {
-                                            usernameController.clear();
-                                            passwordController.clear();
-                                            controller.showSetPinOverLay();
-                                          }
-                                        } else {
+                                            passwordController,
+                                            progress);
+
+                                        // If login fails, show toast and stop the loader
+                                        if (!isUser) {
                                           createToastTop(
                                               'Invalid username or password');
+                                          isLoader.value = false;
+                                          return;
+                                        }
+                                        
+
+                                        // After login, navigate to MainScreen without delay
+                                        if (controller.user!.pin != null) {
+                                          Get.offAll(() => MainScreen());
+                                        } else {
+                                          usernameController.clear();
+                                          passwordController.clear();
+                                          controller.showSetPinOverLay();
                                         }
 
-                                        // Set loading state to false after the process
-                                        isloader.value = false;
+                                        // Reset loading state
+                                        isLoader.value = false;
                                       },
                                       child: const Text(
                                         'Login',
