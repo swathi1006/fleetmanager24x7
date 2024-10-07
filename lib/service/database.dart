@@ -1,4 +1,5 @@
 
+import 'package:fleet_manager_driver_app/model/attendance.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 import 'constants.dart';
@@ -16,6 +17,8 @@ class MongoDB {
     collection_workshop = db!.collection(COLLECTION_WORKSHOPS);
     collection_issues = db!.collection(COLLECTION_ISSUES);
     collection_charts = db!.collection(COLLECTION_CHARTS);
+    collection_attendance = db!.collection('attendance');
+
 
     var driver = await collection_drivers?.findOne(where.eq('driverId', 'DR000'));
     if (driver !=null){
@@ -117,4 +120,47 @@ Future<void> reportIssue(String tripNumber, String vehicleNumber, String driverU
   };
 
   await collection_issues?.insertOne(newIssue);
+}
+//new  functions added below
+
+Future<void> checkInAttendance(String userId) async {
+  final currentDate = DateTime.now();
+  final query = where
+    .eq('userId', userId)
+    .gte('checkInTime', DateTime(currentDate.year, currentDate.month, currentDate.day).toIso8601String())
+    .lte('checkInTime', DateTime(currentDate.year, currentDate.month, currentDate.day, 23, 59, 59).toIso8601String());
+
+  // Check if an attendance record exists for today
+  final existingAttendance = await collection_attendance?.findOne(query);
+  
+  if (existingAttendance == null) {
+    // If no attendance found, create a new one
+    final newAttendance = Attendance(
+      userId: userId,
+      checkInTime: DateTime.now(),
+    ).toMap();
+    
+    await collection_attendance?.insertOne(newAttendance);
+  } else {
+    print("Attendance record already exists for today.");
+  }
+}
+
+Future<void> checkOutAttendance(String userId) async {
+  final currentDate = DateTime.now();
+  final query = where
+    .eq('userId', userId)
+    .gte('checkInTime', DateTime(currentDate.year, currentDate.month, currentDate.day).toIso8601String())
+    .lte('checkInTime', DateTime(currentDate.year, currentDate.month, currentDate.day, 23, 59, 59).toIso8601String());
+
+  // Find the attendance record for today
+  final attendanceRecord = await collection_attendance?.findOne(query);
+  
+  if (attendanceRecord != null) {
+    // Update with check-out time
+    final update = modify.set('checkOutTime', DateTime.now().toIso8601String());
+    await collection_attendance?.updateOne(query, update);
+  } else {
+    print("No attendance record found for check-out.");
+  }
 }

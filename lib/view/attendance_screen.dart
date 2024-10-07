@@ -1,3 +1,5 @@
+import 'package:fleet_manager_driver_app/service/database.dart';
+import 'package:fleet_manager_driver_app/service/global.dart';
 import 'package:fleet_manager_driver_app/utils/color.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -20,22 +22,49 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   String currentDate = DateFormat('dd - MMMM - yyyy').format(DateTime.now());
   String currentTime = DateFormat('hh:mm a').format(DateTime.now());
 
-  void _onCheckInOutPressed() {
+  // void _onCheckInOutPressed() {
+  //   setState(() {
+  //     if (!isCheckedIn) {
+  //       // Check-in logic
+  //       isCheckedIn = true;
+  //       buttonText = "Check Out";
+  //       checkinTime = "Checked-in at ${TimeOfDay.now().format(context)}";
+  //       _showToast("Attendance mark started successfully");
+  //     } else {
+  //       // Check-out logic
+  //       isCheckedIn = false;
+  //       buttonText = "Check In";
+  //       _showToast("Attendance mark ended successfully");
+  //     }
+  //   });
+  // }
+  void _onCheckInOutPressed() async {
+  if (!isCheckedIn) {
+    // Check-in logic
+    await checkInAttendance(loggedInUserId); // Check in
+    print("checked in for user:  $loggedInUserId");
+
+
     setState(() {
-      if (!isCheckedIn) {
-        // Check-in logic
-        isCheckedIn = true;
-        buttonText = "Check Out";
-        checkinTime = "Checked-in at ${TimeOfDay.now().format(context)}";
-        _showToast("Attendance mark started successfully");
-      } else {
-        // Check-out logic
-        isCheckedIn = false;
-        buttonText = "Check In";
-        _showToast("Attendance mark ended successfully");
-      }
+      isCheckedIn = true;
+      buttonText = "Check Out";
+      checkinTime = "Checked-in at ${TimeOfDay.now().format(context)}";
     });
+    _showToast("Attendance marked successfully");
+  } else {
+    // Check-out logic
+    await checkOutAttendance(loggedInUserId); // Check out
+     print("Checked out for user: $loggedInUserId");
+
+
+    setState(() {
+      isCheckedIn = false;
+      buttonText = "Check In";
+    });
+    _showToast("Attendance mark ended successfully");
   }
+}
+
 
   void _showToast(String message) {
     Fluttertoast.showToast(

@@ -10,4 +10,6 @@ DbCollection? collection_scratch;
 DbCollection? collection_workshop;
 DbCollection? collection_issues;
 DbCollection? collection_charts;
+DbCollection? collection_attendance;//new collection
+
 List<Map<String, dynamic>> globalTrips = [];
