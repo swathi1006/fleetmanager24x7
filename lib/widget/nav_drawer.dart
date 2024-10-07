@@ -1,3 +1,4 @@
+import 'package:fleet_manager_driver_app/view/attendance_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:get/get.dart';
@@ -128,28 +129,46 @@ class NavDrawer extends StatelessWidget {
                             height: 10,
                           ),
                           const SizedBox(height: 25),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          Column(
                             children: [
-                              ElevatedButton(
-                                style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(Colors.white54),
-                                ),
-                                onPressed: (){
-                                  homeController.changePin();
-                                },
-                                child: Text('CHANGE PIN',style: TextStyle(color: secondary),)
-                              ),
-
-                              ElevatedButton(
-                                  style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty.all(Colors.white54),
+                               Padding(
+                                 padding: const EdgeInsets.symmetric(horizontal: 16),
+                                 child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.white54,
+                                        minimumSize: const Size(double.maxFinite, 40)
+                                      ),
+                                      onPressed: (){
+                                        navigator?.push(MaterialPageRoute(builder: (context)=>const AttendanceScreen()));
+                                      },
+                                      child: const Text('ATTENDANCE',style: TextStyle(color: secondary),)
+                                    ),
+                               ),
+                              const SizedBox(height: 20,),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  ElevatedButton(
+                                    style: ButtonStyle(
+                                      backgroundColor: WidgetStateProperty.all(Colors.white54),
+                                    ),
+                                    onPressed: (){
+                                      homeController.changePin();
+                                    },
+                                    child: const Text('CHANGE PIN',style: TextStyle(color: secondary),)
                                   ),
-                                  onPressed: (){
-                                    homeController.logout();
-                                  },
-                                  child: Text('LOGOUT',style: TextStyle(color: secondary),)),
-
+                              
+                                  ElevatedButton(
+                                      style: ButtonStyle(
+                                        backgroundColor: MaterialStateProperty.all(Colors.white54),
+                                      ),
+                                      onPressed: (){
+                                        homeController.logout();
+                                      },
+                                      child: Text('LOGOUT',style: TextStyle(color: secondary),)),
+                              
+                                ],
+                              ),
                             ],
                           ),
                         ],
