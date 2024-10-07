@@ -48,7 +48,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
   final vehicleNumber = Vehicle;
   final odometerController = TextEditingController();
   final fuelController = TextEditingController();
-  bool mapEnabled =false;
+  bool mapEnabled = false;
   // final LocationUpdateService _locationUpdateService = LocationUpdateService(vehicleNumber);
 
   LatLng _selectedLocation = const LatLng(9.175249926873791, 76.5014099702239);
@@ -73,11 +73,8 @@ class _NavigationScreenState extends State<NavigationScreen> {
     selectedVehicle = widget.vehicle;
     _initializeLocationService();
   }
- 
-
 
   Future<void> _initializeLocationService() async {
-
     var locationService = LocationUpdateService(selectedVehicle.vehicleNumber,
         onLocationUpdate: (LatLng newLocation) {
       _selectedLocation = newLocation; // Update map location
@@ -104,14 +101,11 @@ class _NavigationScreenState extends State<NavigationScreen> {
 
     locationService.startPeriodicLocationUpdates();
 
-    if (selectedVehicle.vehicleLocation!=null) {
+    if (selectedVehicle.vehicleLocation != null) {
       print('object:${selectedVehicle.vehicleLocation}');
-    print('object2:${selectedVehicle.vehicleLocation!.latitude}');
-    print('object:3${selectedVehicle.vehicleLocation!.longitude}');
-      
+      print('object2:${selectedVehicle.vehicleLocation!.latitude}');
+      print('object:3${selectedVehicle.vehicleLocation!.longitude}');
     }
-
-
 
     _selectedLocation = selectedVehicle.vehicleLocation != null
         ? LatLng(selectedVehicle.vehicleLocation!.latitude,
@@ -294,19 +288,18 @@ class _NavigationScreenState extends State<NavigationScreen> {
                 padding: const EdgeInsets.only(
                     left: 4, right: 4, top: 4, bottom: 45),
                 child: FloatingActionButton(
+                  heroTag: null, // updated
                   backgroundColor: primary,
                   onPressed: () {
-                    mapEnabled ?  
-
-                    showDetailOverLay() :
-                    CustomDialog(selectedVehicle).showLocationDisabledDialog(context);
-                     
+                    mapEnabled
+                        ? showDetailOverLay()
+                        : CustomDialog(selectedVehicle)
+                            .showLocationDisabledDialog(context);
                   },
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(100.0),
                   ),
-                  child:
-                   const Icon(
+                  child: const Icon(
                     Icons.menu_rounded,
                     color: Colors.white,
                     size: 30,
@@ -323,6 +316,8 @@ class _NavigationScreenState extends State<NavigationScreen> {
                 padding: const EdgeInsets.only(
                     left: 4, right: 4, top: 4, bottom: 45),
                 child: FloatingActionButton(
+                  heroTag: null, // updated
+
                   backgroundColor: Colors.red[700],
                   onPressed: () {
                     print("Dashboard");
@@ -353,6 +348,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
                 padding: const EdgeInsets.only(
                     left: 4, right: 4, top: 4, bottom: 45),
                 child: FloatingActionButton(
+                  heroTag: null, // updated
                   backgroundColor: greenlight,
                   onPressed: () {
                     controller.callHelp();

@@ -23,15 +23,16 @@ import '../service/database.dart';
 import 'navigation_screen.dart';
 
 class CarDetailScreen extends StatefulWidget {
-  const CarDetailScreen(this.vehicle,this._isStored,{Key? key}) : super(key: key);
+  const CarDetailScreen(this.vehicle, this._isStored, {Key? key})
+      : super(key: key);
   final Vehicle vehicle;
   // final workshopMovement workshop;
   final bool _isStored;
 
-
   @override
   State<CarDetailScreen> createState() => _CarDetailScreenState();
 }
+
 Rx<File?> _imageFile = Rx<File?>(null);
 Rx<File?> _scratchImageFile = Rx<File?>(null);
 
@@ -45,7 +46,6 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
   final fuelController = TextEditingController();
   String? _issueSelection;
 
-
   @override
   void initState() {
     super.initState();
@@ -54,28 +54,27 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
     controller.getScratchdata(selectedVehicle);
   }
 
+  Future<void> _pickImage() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(source: ImageSource.camera);
 
-
-    Future<void> _pickImage() async {
-      final ImagePicker _picker = ImagePicker();
-      final XFile? image = await _picker.pickImage(source: ImageSource.camera);
-
-      if (image != null) {
-        setState(() {
-          _imageFile.value = File(image.path);
-        });
-      }
+    if (image != null) {
+      setState(() {
+        _imageFile.value = File(image.path);
+      });
     }
-    Future<void> _pickScratchImage() async {
-      final ImagePicker _picker = ImagePicker();
-      final XFile? image = await _picker.pickImage(source: ImageSource.camera);
+  }
 
-      if (image != null) {
-        setState(() {
-          _scratchImageFile.value = File(image.path);
-        });
-      }
+  Future<void> _pickScratchImage() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(source: ImageSource.camera);
+
+    if (image != null) {
+      setState(() {
+        _scratchImageFile.value = File(image.path);
+      });
     }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,23 +85,45 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
           margin: const EdgeInsets.all(30),
           child: Column(
             children: [
-              SizedBox(height: 20,),
+              SizedBox(
+                height: 20,
+              ),
               buildDashboardBox(),
-              widget._isStored == true? buildBodyConditionBox():Container(),
-              SizedBox(height: 15,),
-              Divider(color: greenlight.withOpacity(.3),thickness: 1,),
-              SizedBox(height: 10,),
+              widget._isStored == true ? buildBodyConditionBox() : Container(),
+              SizedBox(
+                height: 15,
+              ),
+              Divider(
+                color: greenlight.withOpacity(.3),
+                thickness: 1,
+              ),
+              SizedBox(
+                height: 10,
+              ),
               buildCheckBox(),
-              SizedBox(height: 15,),
-              Divider(color: greenlight.withOpacity(.3),thickness: 1,),
-              SizedBox(height: 15,),
+              SizedBox(
+                height: 15,
+              ),
+              Divider(
+                color: greenlight.withOpacity(.3),
+                thickness: 1,
+              ),
+              SizedBox(
+                height: 15,
+              ),
               Padding(
                 padding: const EdgeInsets.all(10.0),
-                child: Text('Do you want to report any new scratches?', style: TextStyle(color: primary, fontWeight: FontWeight.w500)),
+                child: Text('Do you want to report any new scratches?',
+                    style:
+                        TextStyle(color: primary, fontWeight: FontWeight.w500)),
               ),
 
               RadioListTile<String>(
-                title: const Text('Yes', style: TextStyle(color: primary,fontSize: 14, fontWeight: FontWeight.w500)),
+                title: const Text('Yes',
+                    style: TextStyle(
+                        color: primary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500)),
                 value: 'yes',
                 activeColor: primary,
                 groupValue: _issueSelection,
@@ -113,7 +134,11 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                 },
               ),
               RadioListTile<String>(
-                title: const Text('No', style: TextStyle(color: primary,fontSize: 14, fontWeight: FontWeight.w500)),
+                title: const Text('No',
+                    style: TextStyle(
+                        color: primary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500)),
                 value: 'no',
                 activeColor: primary,
                 groupValue: _issueSelection,
@@ -128,7 +153,10 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                   controller: controller.issueController,
                   decoration: InputDecoration(
                     labelText: 'Enter Scratch Details',
-                    labelStyle: TextStyle(color: primary, fontSize: 13, fontWeight: FontWeight.w500),
+                    labelStyle: TextStyle(
+                        color: primary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500),
                     enabledBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: primary.withOpacity(.7)),
                     ),
@@ -137,15 +165,17 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 20,),
-
-                Obx(() =>
-                _scratchImageFile.value != null
-                    ?
-                Image.file(_scratchImageFile.value!)
-                    : Container(),
+                SizedBox(
+                  height: 20,
                 ),
-                SizedBox(height: 5,),
+                Obx(
+                  () => _scratchImageFile.value != null
+                      ? Image.file(_scratchImageFile.value!)
+                      : Container(),
+                ),
+                SizedBox(
+                  height: 5,
+                ),
                 Center(
                   child: ElevatedButton(
                     style: ButtonStyle(
@@ -159,11 +189,18 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.add_a_photo_rounded, color: Colors.white, size: 18,),
+                        Icon(
+                          Icons.add_a_photo_rounded,
+                          color: Colors.white,
+                          size: 18,
+                        ),
                         const SizedBox(width: 10),
                         Text(
                           'SCRATCH  IMAGE',
-                          style: GoogleFonts.lato(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
+                          style: GoogleFonts.lato(
+                              fontSize: 12,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -171,115 +208,242 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                 ),
                 _scratchImageFile.value != null
                     ? Column(
-                      children: [
-                        SizedBox(height: 10,),
-                        ElevatedButton(
-                          style: ButtonStyle(
-                            elevation: MaterialStateProperty.all(5),
-                            backgroundColor: WidgetStateProperty.all(greenlight),
+                        children: [
+                          SizedBox(
+                            height: 10,
                           ),
-                          onPressed: () async {
-                            if (_issueSelection == 'yes') {
-                              try {
-                                final Uint8List bytes = await _scratchImageFile.value!
-                                    .readAsBytes();
-                                final Uint8List compressedBytes = await FlutterImageCompress.compressWithList(
-                                  bytes,
-                                  // minWidth: 600,
-                                  // minHeight: 800,
-                                  quality: 65,
-                                );
-                                String base64Image = base64Encode(compressedBytes);
-                                // print("byte converted...................");
-                                await reportIssue(
-                                loginController.currentTrip!.tripNumber,
-                                selectedVehicle.vehicleNumber,
-                                loginController.user!.userName,
-                                "Trip begin scratches",
-                                controller.issueController.text,
-                                base64Image);
-                                // print("Uploaded.............................");
-                              } catch (e) {
-                                print(e);
+                          ElevatedButton(
+                            style: ButtonStyle(
+                              elevation: MaterialStateProperty.all(5),
+                              backgroundColor:
+                                  WidgetStateProperty.all(greenlight),
+                            ),
+                            onPressed: () async {
+                              if (_issueSelection == 'yes') {
+                                try {
+                                  final Uint8List bytes =
+                                      await _scratchImageFile.value!
+                                          .readAsBytes();
+                                  final Uint8List compressedBytes =
+                                      await FlutterImageCompress
+                                          .compressWithList(
+                                    bytes,
+                                    // minWidth: 600,
+                                    // minHeight: 800,
+                                    quality: 65,
+                                  );
+                                  String base64Image =
+                                      base64Encode(compressedBytes);
+                                  // print("byte converted...................");
+                                  await reportIssue(
+                                      loginController.currentTrip!.tripNumber,
+                                      selectedVehicle.vehicleNumber,
+                                      loginController.user!.userName,
+                                      "Trip begin scratches",
+                                      controller.issueController.text,
+                                      base64Image);
+                                  // print("Uploaded.............................");
+                                } catch (e) {
+                                  print(e);
+                                }
                               }
-                            }
-                            controller.issueController.clear();
-                            _scratchImageFile = Rx<File?>(null);
-                            createToastTop("Scratch image uploaded successfully. If you want to add other new scratches, you can do it in the same way.");
-                          },
-                          child: Text("UPLOAD", style: GoogleFonts.lato(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
+                              controller.issueController.clear();
+                              _scratchImageFile = Rx<File?>(null);
+                              createToastTop(
+                                  "Scratch image uploaded successfully. If you want to add other new scratches, you can do it in the same way.");
+                            },
+                            child: Text(
+                              "UPLOAD",
+                              style: GoogleFonts.lato(
+                                  fontSize: 12,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
                           ),
-                        ),
-                      ],
-                    ):
-                    Container(),
+                        ],
+                      )
+                    : Container(),
               ],
 
-              SizedBox(height: 15,),
-              Divider(color: greenlight.withOpacity(.3),thickness: 1,),
-              SizedBox(height: 15,),
+              SizedBox(
+                height: 15,
+              ),
+              Divider(
+                color: greenlight.withOpacity(.3),
+                thickness: 1,
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+              //   children: [
+              //     ClipRRect(
+              //       borderRadius: BorderRadius.circular(25),
+              //       child: Image.memory(
+              //         base64Decode(selectedVehicle.vehiclePhoto),
+              //         height: 140,
+              //       ),
+              //     ),
+              //     const SizedBox(width: 10,),
+              //     Column(
+              //       crossAxisAlignment: CrossAxisAlignment.center,
+              //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //       children: [
+              //         GestureDetector(
+              //           onTap: controller.checkboxValues.every((value) => value) & controller.isDashboard ? () async {
+              //             bool pinValidity = await controller.showSetPinOverLay();
+              //             if(pinValidity) {
+              //               await updateTripStatus(loginController.user!.userName, loginController.currentTrip!.tripNumber);
+              //               await updateKeyCustody(selectedVehicle.vehicleNumber, loginController.user!.userName);
+              //               await updateTripStartTime(loginController.currentTrip!.tripNumber);
+              //               loginController.currentTrip!.tripStartTimeDriver = DateTime.now();
+              //               loginController.user!.status = loginController.currentTrip!.tripNumber;
+              //               Get.offAll(() => NavigationScreen(selectedVehicle));
+              //             }
+              //           }:
+              //               (){
+              //             createToastBottom("Please check all the fields");
+              //               },
+              //           child: Container(
+              //             decoration: BoxDecoration(
+              //               color: controller.checkboxValues.every((value) => value) & controller.isDashboard ? greenlight:greenlight.withOpacity(.4),
+              //               borderRadius: BorderRadius.circular(8),
+              //             ),
+              //             child:Padding(
+              //               padding: const EdgeInsets.all(10.0),
+              //               child: Text("TAKE HANDOVER",style: GoogleFonts.lato(color: Colors.white,fontSize: 12,fontWeight: FontWeight.w700,height: 1.2),),
+              //             ),
+              //           ),
+              //         ),
+              //         SizedBox(height: 20,),
+              //         GestureDetector(
+              //           onTap:() async {
+              //             bool pinValidity = await controller.showSetPinOverLay();
+              //             if(pinValidity) {
+              //               Get.offAll(() => HomeScreen());
+              //             }
+              //             print("RELEASE CAR");
+              //           },
+              //           child: Container(
+              //             decoration: BoxDecoration(
+              //               color: Colors.red,
+              //               borderRadius: BorderRadius.circular(8),
+              //             ),
+              //             child:Padding(
+              //               padding: const EdgeInsets.all(10.0),
+              //               child: Text("RELEASE CAR",style: GoogleFonts.lato(color: Colors.white,fontSize: 12,fontWeight: FontWeight.w700,height: 1.2),),
+              //             ),
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+              //   ],
+              // ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(25),
+                    borderRadius: BorderRadius.circular(20),
                     child: Image.memory(
                       base64Decode(selectedVehicle.vehiclePhoto),
                       height: 140,
+                      width: 180, 
+                      // Added width to maintain aspect ratio
+                      fit: BoxFit
+                          .cover, // Ensures the image fits within the given space
                     ),
                   ),
-                  const SizedBox(width: 10,),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      GestureDetector(
-                        onTap: controller.checkboxValues.every((value) => value) & controller.isDashboard ? () async {
-                          bool pinValidity = await controller.showSetPinOverLay();
-                          if(pinValidity) {
-                            await updateTripStatus(loginController.user!.userName, loginController.currentTrip!.tripNumber);
-                            await updateKeyCustody(selectedVehicle.vehicleNumber, loginController.user!.userName);
-                            await updateTripStartTime(loginController.currentTrip!.tripNumber);
-                            loginController.currentTrip!.tripStartTimeDriver = DateTime.now();
-                            loginController.user!.status = loginController.currentTrip!.tripNumber;
-                            Get.offAll(() => NavigationScreen(selectedVehicle));
-                          }
-                        }:
-                            (){
-                          createToastBottom("Please check all the fields");
-                            },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: controller.checkboxValues.every((value) => value) & controller.isDashboard ? greenlight:greenlight.withOpacity(.4),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child:Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Text("TAKE HANDOVER",style: GoogleFonts.lato(color: Colors.white,fontSize: 12,fontWeight: FontWeight.w700,height: 1.2),),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    // This makes sure the Column fits within the remaining available space
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
+                          onTap: controller.checkboxValues
+                                      .every((value) => value) &&
+                                  controller.isDashboard
+                              ? () async {
+                                  bool pinValidity =
+                                      await controller.showSetPinOverLay();
+                                  if (pinValidity) {
+                                    await updateTripStatus(
+                                        loginController.user!.userName,
+                                        loginController
+                                            .currentTrip!.tripNumber);
+                                    await updateKeyCustody(
+                                        selectedVehicle.vehicleNumber,
+                                        loginController.user!.userName);
+                                    await updateTripStartTime(loginController
+                                        .currentTrip!.tripNumber);
+                                    loginController.currentTrip!
+                                        .tripStartTimeDriver = DateTime.now();
+                                    loginController.user!.status =
+                                        loginController.currentTrip!.tripNumber;
+                                    Get.offAll(() =>
+                                        NavigationScreen(selectedVehicle));
+                                  }
+                                }
+                              : () {
+                                  createToastBottom(
+                                      "Please check all the fields");
+                                },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: controller.checkboxValues
+                                          .every((value) => value) &&
+                                      controller.isDashboard
+                                  ? greenlight
+                                  : greenlight.withOpacity(.4),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text(
+                                "TAKE HANDOVER",
+                                style: GoogleFonts.lato(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  height: 1.2,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(height: 20,),
-                      GestureDetector(
-                        onTap:() async {
-                          bool pinValidity = await controller.showSetPinOverLay();
-                          if(pinValidity) {
-                            Get.offAll(() => HomeScreen());
-                          }
-                          print("RELEASE CAR");
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child:Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Text("RELEASE CAR",style: GoogleFonts.lato(color: Colors.white,fontSize: 12,fontWeight: FontWeight.w700,height: 1.2),),
+                        const SizedBox(height: 20),
+                        GestureDetector(
+                          onTap: () async {
+                            bool pinValidity =
+                                await controller.showSetPinOverLay();
+                            if (pinValidity) {
+                              Get.offAll(() => HomeScreen());
+                            }
+                            print("RELEASE CAR");
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text(
+                                "RELEASE CAR",
+                                style: GoogleFonts.lato(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  height: 1.2,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -290,9 +454,9 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
     );
   }
 
-  Widget buildDashboardBox(){
+  Widget buildDashboardBox() {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         print("Dashboard");
         showDialog(
           context: context,
@@ -302,7 +466,7 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
         );
       },
       child: Container(
-        margin: const EdgeInsets.only(top: 10,left: 5,right: 5),
+        margin: const EdgeInsets.only(top: 10, left: 5, right: 5),
         height: 110,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
@@ -311,20 +475,24 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
             fit: BoxFit.fill,
           ),
         ),
-        child:Stack(
+        child: Stack(
           fit: StackFit.expand,
           children: [
             DecoratedBox(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 gradient: LinearGradient(
-                  colors: [Colors.black.withOpacity(.85), primary.withOpacity(.5)],
+                  colors: [
+                    Colors.black.withOpacity(.85),
+                    primary.withOpacity(.5)
+                  ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
               ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0,vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -332,15 +500,33 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("DASHBOARD",style: GoogleFonts.lato(color: greenlight,fontSize: 16,fontWeight: FontWeight.w900,height: 1.2),),
-                        SizedBox(height: 5,),
-                        SizedBox(
-                            width: MediaQuery.of(context).size.width*.6,
-                            child: Text("Inspect and top off engine oil, coolant, brake fluid, and power steering fluid levels as necessary. Check battery terminals for corrosion and ensure the battery is securely mounted.",style: TextStyle(color: Colors.white.withOpacity(.7),fontSize: 8),maxLines: 3,)
+                        Text(
+                          "DASHBOARD",
+                          style: GoogleFonts.lato(
+                              color: greenlight,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900,
+                              height: 1.2),
                         ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        SizedBox(
+                            width: MediaQuery.of(context).size.width * .6,
+                            child: Text(
+                              "Inspect and top off engine oil, coolant, brake fluid, and power steering fluid levels as necessary. Check battery terminals for corrosion and ensure the battery is securely mounted.",
+                              style: TextStyle(
+                                  color: Colors.white.withOpacity(.7),
+                                  fontSize: 8),
+                              maxLines: 3,
+                            )),
                       ],
                     ),
-                    Icon(Icons.arrow_forward_ios_sharp,color: Colors.white,size: 25,)
+                    Icon(
+                      Icons.arrow_forward_ios_sharp,
+                      color: Colors.white,
+                      size: 25,
+                    )
                   ],
                 ),
               ),
@@ -351,7 +537,7 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
     );
   }
 
-  Widget buildBodyConditionBox(){
+  Widget buildBodyConditionBox() {
     return GestureDetector(
       onTap: () async {
         while (controller.isloading) {
@@ -365,7 +551,7 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
         }
       },
       child: Container(
-        margin: const EdgeInsets.only(top: 10,left: 5,right: 5),
+        margin: const EdgeInsets.only(top: 10, left: 5, right: 5),
         height: 110,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
@@ -374,20 +560,24 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
             fit: BoxFit.fill,
           ),
         ),
-        child:Stack(
+        child: Stack(
           fit: StackFit.expand,
           children: [
             DecoratedBox(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 gradient: LinearGradient(
-                  colors: [Colors.black.withOpacity(.85), primary.withOpacity(.5)],
+                  colors: [
+                    Colors.black.withOpacity(.85),
+                    primary.withOpacity(.5)
+                  ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
               ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0,vertical: 5),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 25.0, vertical: 5),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -396,15 +586,33 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(
-                            width: MediaQuery.of(context).size.width*.3,
-                            child:
-                            Text("BODY CONDITION",style: GoogleFonts.lato(color: greenlight,fontSize: 16,fontWeight: FontWeight.w900,height: 1.2,))),
-                        SizedBox(height: 5,),
-                        SizedBox(width: MediaQuery.of(context).size.width*.6,
-                            child: Text("Check for dents, scratches, rust, or damage.Inspect for cracks or chips. Ensure windows open and close properly. Check side and rearview mirrors for cracks or damage.",style: TextStyle(color: Colors.white.withOpacity(.7),fontSize: 8),maxLines: 3,)),
+                            width: MediaQuery.of(context).size.width * .3,
+                            child: Text("BODY CONDITION",
+                                style: GoogleFonts.lato(
+                                  color: greenlight,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w900,
+                                  height: 1.2,
+                                ))),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        SizedBox(
+                            width: MediaQuery.of(context).size.width * .6,
+                            child: Text(
+                              "Check for dents, scratches, rust, or damage.Inspect for cracks or chips. Ensure windows open and close properly. Check side and rearview mirrors for cracks or damage.",
+                              style: TextStyle(
+                                  color: Colors.white.withOpacity(.7),
+                                  fontSize: 8),
+                              maxLines: 3,
+                            )),
                       ],
                     ),
-                    Icon(Icons.arrow_forward_ios_sharp,color: Colors.white,size: 25,)
+                    Icon(
+                      Icons.arrow_forward_ios_sharp,
+                      color: Colors.white,
+                      size: 25,
+                    )
                   ],
                 ),
               ),
@@ -415,7 +623,6 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
     );
   }
 
-
   Widget buildCheckBox() {
     return Column(
       children: [
@@ -424,23 +631,31 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
             margin: const EdgeInsets.only(bottom: 5),
             child: ListTile(
               minTileHeight: 20,
-                tileColor: controller.checkboxValues[index] ? greenlight.withOpacity(.5):greenlight.withOpacity(.1),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5),
+              tileColor: controller.checkboxValues[index]
+                  ? greenlight.withOpacity(.5)
+                  : greenlight.withOpacity(.1),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5),
+              ),
+              title: Text(
+                controller.checkboxTexts[index],
+                style: TextStyle(
+                  color: primary.withOpacity(.7),
+                  fontSize: 13,
                 ),
-                title: Text(controller.checkboxTexts[index],style: TextStyle(color: primary.withOpacity(.7), fontSize: 13,),),
-                trailing: Transform.scale(
-                  scale: 0.6,
-                  child: Checkbox(
-                    value: controller.checkboxValues[index],
-                    activeColor: primary,
-                    onChanged: (value) {
-                      setState(() {
-                        controller.checkboxValues[index] = value!;
-                      });
-                    },
-                  ),
+              ),
+              trailing: Transform.scale(
+                scale: 0.6,
+                child: Checkbox(
+                  value: controller.checkboxValues[index],
+                  activeColor: primary,
+                  onChanged: (value) {
+                    setState(() {
+                      controller.checkboxValues[index] = value!;
+                    });
+                  },
                 ),
+              ),
             ),
           );
         }),
@@ -476,7 +691,9 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
         builder: (BuildContext context, StateSetter setState) {
           return AlertDialog(
             backgroundColor: secondary,
-            title: Text("DASHBOARD", style: GoogleFonts.lato(color: primary, fontSize: 18, fontWeight: FontWeight.w700)),
+            title: Text("DASHBOARD",
+                style: GoogleFonts.lato(
+                    color: primary, fontSize: 18, fontWeight: FontWeight.w700)),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -489,7 +706,10 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                   ],
                   decoration: InputDecoration(
                     labelText: "Odometer Reading",
-                    labelStyle: TextStyle(color: primary, fontSize: 13,fontWeight: FontWeight.w500),
+                    labelStyle: TextStyle(
+                        color: primary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500),
                     enabledBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: primary.withOpacity(.7)),
                     ),
@@ -498,7 +718,9 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 10,),
+                SizedBox(
+                  height: 10,
+                ),
                 TextFormField(
                   controller: fuelController,
                   keyboardType: TextInputType.number,
@@ -507,7 +729,10 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                   ],
                   decoration: InputDecoration(
                     labelText: 'Fuel Level',
-                    labelStyle: TextStyle(color: primary, fontSize: 13, fontWeight: FontWeight.w500),
+                    labelStyle: TextStyle(
+                        color: primary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500),
                     enabledBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: primary.withOpacity(.7)),
                     ),
@@ -516,15 +741,14 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 20,),
-
-                Obx(() =>
-                _imageFile.value != null
-                    ?
-                Image.file(_imageFile.value!)
-                    : Container(),
+                SizedBox(
+                  height: 20,
                 ),
-
+                Obx(
+                  () => _imageFile.value != null
+                      ? Image.file(_imageFile.value!)
+                      : Container(),
+                ),
                 Center(
                   child: ElevatedButton(
                     style: ButtonStyle(
@@ -538,11 +762,18 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.add_a_photo_rounded, color: Colors.white, size: 18,),
+                        Icon(
+                          Icons.add_a_photo_rounded,
+                          color: Colors.white,
+                          size: 18,
+                        ),
                         const SizedBox(width: 10),
                         Text(
                           'ADD  IMAGE',
-                          style: GoogleFonts.lato(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
+                          style: GoogleFonts.lato(
+                              fontSize: 12,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -556,58 +787,68 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                   _imageFile = Rx<File?>(null);
                   Get.back();
                   setState(() {
-                    controller.isDashboard=true;
+                    controller.isDashboard = true;
                   });
                   print(controller.isDashboard);
                 },
-                child: Text("CANCEL", style: TextStyle(color: primary, fontSize: 15, fontWeight: FontWeight.w600),),
+                child: Text(
+                  "CANCEL",
+                  style: TextStyle(
+                      color: primary,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600),
+                ),
               ),
-
               TextButton(
                 onPressed: () async {
-                  if(odometerController.text!='' && fuelController.text!='' && _imageFile.value != null){
+                  if (odometerController.text != '' &&
+                      fuelController.text != '' &&
+                      _imageFile.value != null) {
                     setState(() {
-                      controller.isDashboard=true;
+                      controller.isDashboard = true;
                     });
-                    try{
-                      final Uint8List bytes = await _imageFile
-                          .value!.readAsBytes();
-                      String base64Image = base64Encode(
-                          bytes);
+                    try {
+                      final Uint8List bytes =
+                          await _imageFile.value!.readAsBytes();
+                      String base64Image = base64Encode(bytes);
                       widget._isStored
                           ? {
-                        await updateVehicleReading(
-                          selectedVehicle.vehicleNumber,
-                          odometerController.text,
-                        ),
-                        await updateTripBegin(
-                            loginController.currentTrip!.tripNumber,
-                            odometerController.text,
-                            fuelController.text,
-                            base64Image),
-                        selectedVehicle.odometerReading = int.parse(odometerController.text),
-                          }
-                          :{
-                        await updateTempVehicleReading(
-                          selectedVehicle.vehicleNumber,
-                          odometerController.text),
-                      };
+                              await updateVehicleReading(
+                                selectedVehicle.vehicleNumber,
+                                odometerController.text,
+                              ),
+                              await updateTripBegin(
+                                  loginController.currentTrip!.tripNumber,
+                                  odometerController.text,
+                                  fuelController.text,
+                                  base64Image),
+                              selectedVehicle.odometerReading =
+                                  int.parse(odometerController.text),
+                            }
+                          : {
+                              await updateTempVehicleReading(
+                                  selectedVehicle.vehicleNumber,
+                                  odometerController.text),
+                            };
                       odometerController.clear();
                       fuelController.clear();
                       _imageFile = Rx<File?>(null);
-                    }
-                    catch(e){
+                    } catch (e) {
                       print(e);
                     }
                     print(controller.isDashboard);
-
-                  }
-                  else{
+                  } else {
                     createToastBottom("Please fill all the fields");
                   }
                   Navigator.of(context).pop();
                 },
-                child: Text("SUBMIT", style: TextStyle(color: primary, fontSize: 15, fontWeight: FontWeight.w600),),
+                child: Text(
+                  "SUBMIT",
+                  style: TextStyle(
+                      color: primary,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600),
+                ),
               ),
             ],
           );

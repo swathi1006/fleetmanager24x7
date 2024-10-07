@@ -1,4 +1,4 @@
-package com.example.fleet_manager_driver_app
+package com.fleet_manager_driver_app
 
 import io.flutter.embedding.android.FlutterActivity
 

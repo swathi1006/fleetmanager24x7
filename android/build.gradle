@@ -1,16 +1,17 @@
-//buildscript {
-//    ext.kotlin_version = '2.0.10'
-//    repositories {
-//        google()
-//        mavenCentral()
-//    }
-//
-//    dependencies {
-//        classpath 'com.android.tools.build:gradle:7.3.1'
-//        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-//    }
-//}
+/* groovylint-disable-next-line CompileStatic */
+buildscript {
+    ext.kotlin_version = '2.0.20'
+    repositories {
+        google()
+        mavenCentral()
+    }
 
+    dependencies {
+        // classpath 'com.android.tools.build:gradle:7.3.1'
+        classpath 'com.android.tools.build:gradle:8.2.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
 
 allprojects {
     repositories {
@@ -27,6 +28,6 @@ subprojects {
     project.evaluationDependsOn(':app')
 }
 
-tasks.register("clean", Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }

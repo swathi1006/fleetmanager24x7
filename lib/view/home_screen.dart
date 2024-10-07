@@ -74,73 +74,97 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: secondary,
-      body: controller.isinitloading.value?const Center(child: CircularProgressIndicator(color: greenlight,)):
-      SingleChildScrollView(
-        child: Column(
-          children: [
-            loginController.trips.isNotEmpty? buildTripCard(): const Padding(
-              padding: EdgeInsets.symmetric(vertical:60),
-              child: Center(child: Text("No trips assigned",style: TextStyle(color: greenlight),)),
-            ),
-            const SizedBox(height: 20),
-            loginController.currentTrip != null ? buildCurrentTrip() : Container(),
-            buildWorkChart(),
-            const SizedBox(height: 20),
-            Container(
-                margin: const EdgeInsets.only(bottom: 20, left: 30, right: 30),
-                child: Divider(color: greenlight.withOpacity(.3), thickness: 1)),
-            // loginController.user!.status == null ?
-            loginController.currentTrip != null ?
-            loginController.user!.status == null ?
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children:[
-                GestureDetector(
-                  onTap: () {
-                    // loginController.currentTrip == null ?
-                    //     createToastBottom("No trip to start") :
-                      showTakeAKeyOverLay();
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: greenlight,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(12.0),
-                      child: Text("TAKE A CAR", style: TextStyle(color:Colors.white, fontSize: 12, fontWeight: FontWeight.w700)),
-                    ),
-                  ),
-                ),
-              ],
-            ) :
-            //resume trip
-            Container(
-              child:Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children:[
-                  GestureDetector(
-                    onTap: () {
-                        showCheckPinOverLay();
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: greenlight,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.all(12.0),
-                        child: Text("RESUME TRIP", style: TextStyle(color:Colors.white, fontSize: 12, fontWeight: FontWeight.w700)),
-                      ),
-                    ),
-                  ),
+      body: controller.isinitloading.value
+          ? const Center(
+              child: CircularProgressIndicator(
+              color: greenlight,
+            ))
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  loginController.trips.isNotEmpty
+                      ? buildTripCard()
+                      : const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 60),
+                          child: Center(
+                              child: Text(
+                            "No trips assigned",
+                            style: TextStyle(color: greenlight),
+                          )),
+                        ),
+                  const SizedBox(height: 20),
+                  loginController.currentTrip != null
+                      ? buildCurrentTrip()
+                      : Container(),
+                  buildWorkChart(),
+                  const SizedBox(height: 20),
+                  Container(
+                      margin: const EdgeInsets.only(
+                          bottom: 20, left: 30, right: 30),
+                      child: Divider(
+                          color: greenlight.withOpacity(.3), thickness: 1)),
+                  // loginController.user!.status == null ?
+                  loginController.currentTrip != null
+                      ? loginController.user!.status == null
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    // loginController.currentTrip == null ?
+                                    //     createToastBottom("No trip to start") :
+                                    showTakeAKeyOverLay();
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: greenlight,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: const Padding(
+                                      padding: EdgeInsets.all(12.0),
+                                      child: Text("TAKE A CAR",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w700)),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          :
+                          //resume trip
+                          Container(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      showCheckPinOverLay();
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: greenlight,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(12.0),
+                                        child: Text("RESUME TRIP",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w700)),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                      : Container(),
+                  const SizedBox(height: 20),
                 ],
               ),
-            ):Container(),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
+            ),
     );
   }
 
@@ -163,9 +187,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 20),
                     const Text(
                       'ENTER YOUR PIN',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: primary),
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: primary),
                     ),
-
                     const SizedBox(height: 20),
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -173,8 +199,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         borderRadius: BorderRadius.circular(30),
                         color: greenlight.withOpacity(.1),
                       ),
-                      child: Obx(() =>
-                          TextFormField(
+                      child: Obx(() => TextFormField(
                             obscureText: _obscureTextPin.value,
                             controller: pinController,
                             maxLength: 4,
@@ -188,7 +213,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               prefixIconColor: primary,
                               border: InputBorder.none,
                               labelText: 'PIN',
-                              labelStyle: const TextStyle(color: primary, fontSize: 15, fontWeight: FontWeight.w600),
+                              labelStyle: const TextStyle(
+                                  color: primary,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600),
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _obscureTextPin.value
@@ -199,11 +227,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 onPressed: () => _obscureTextPin.toggle(),
                               ),
                             ),
-                          )
-                      ),
+                          )),
                     ),
-
-
                     const SizedBox(height: 20),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -214,25 +239,28 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       onPressed: () async {
-                         if (int.parse(pinController.text) == loginController.user!.pin) {
-                          if(selectedVehicle != null) {
-                            Get.offAll(() =>
-                                NavigationScreen(selectedVehicle!));
-                          }else{
+                        if (int.parse(pinController.text) ==
+                            loginController.user!.pin) {
+                          if (selectedVehicle != null) {
+                            Get.offAll(
+                                () => NavigationScreen(selectedVehicle!));
+                          } else {
                             createToastTop('No vehicle selected');
                           }
                         } else {
                           print('Incorrect PIN');
                           createToastTop('Incorrect PIN');
-
                         }
                       },
-                      child: const Text('SUBMIT', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600)),
+                      child: const Text('SUBMIT',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600)),
                     ),
                     const SizedBox(height: 20),
                   ],
                 ),
-
               ),
             );
           },
@@ -242,9 +270,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget buildTripCard(){
+  Widget buildTripCard() {
     return Container(
-      margin: const EdgeInsets.only(top: 20,bottom:30, left: 5, right: 5),
+      margin: const EdgeInsets.only(top: 20, bottom: 30, left: 5, right: 5),
       child: SizedBox(
         height: MediaQuery.of(context).size.width / 2.7, // Card height
         child: PageView.builder(
@@ -252,7 +280,8 @@ class _HomeScreenState extends State<HomeScreen> {
           controller: PageController(viewportFraction: 0.36, initialPage: 2),
           onPageChanged: (index) => setState(() => _index = index),
           itemBuilder: (context, index) {
-            double scale = _index == index ? 1 : .7; // Scale up if it's the middle card
+            double scale =
+                _index == index ? 1 : .7; // Scale up if it's the middle card
             return AnimatedContainer(
               duration: const Duration(milliseconds: 400),
               curve: Curves.fastOutSlowIn,
@@ -263,7 +292,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     image: DecorationImage(
-                      image: MemoryImage(base64Decode((loginController.vehicles.firstWhere((vehicle) => vehicle.vehicleNumber == loginController.trips[index].vehicleNumber).vehiclePhoto))),
+                      image: MemoryImage(base64Decode((loginController.vehicles
+                          .firstWhere((vehicle) =>
+                              vehicle.vehicleNumber ==
+                              loginController.trips[index].vehicleNumber)
+                          .vehiclePhoto))),
                       fit: BoxFit.fill, // Make the image fill the container
                     ),
                   ),
@@ -273,55 +306,126 @@ class _HomeScreenState extends State<HomeScreen> {
                       DecoratedBox(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          color: _index == index ? primary.withOpacity(.3): Colors.black.withOpacity(.2),
+                          color: _index == index
+                              ? primary.withOpacity(.3)
+                              : Colors.black.withOpacity(.2),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.only(left:20.0, right: 10.0,top:15, bottom: 10.0),
+                          padding: const EdgeInsets.only(
+                              left: 20.0, right: 10.0, top: 15, bottom: 10.0),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
+                              // Row(
+                              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              //   children: [
+                              //     Text(getFirstWords(loginController.vehicles.firstWhere((vehicle) => vehicle.vehicleNumber == loginController.trips[index].vehicleNumber,).vehicleName,2),
+                              //      style:  TextStyle(color:Colors.white.withOpacity(.9), fontSize: 12, fontWeight: FontWeight.w300)),
+                              //     Icon(loginController.trips[index].tripStartTimeDriver != null && loginController.trips[index].tripEndTimeDriver !=null ? Icons.circle :
+                              //     // loginController.trips[index].tripStartTimeDriver != null && loginController.trips[index].tripEndTimeDriver ==null ? Icons.drive_eta_rounded :
+                              //     Icons.circle_outlined, color: Colors.white, size: 15),
+                              //   ],
+                              // ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(getFirstWords(loginController.vehicles.firstWhere((vehicle) => vehicle.vehicleNumber == loginController.trips[index].vehicleNumber,).vehicleName,2), style:  TextStyle(color:Colors.white.withOpacity(.9), fontSize: 12, fontWeight: FontWeight.w300)),
-                                  Icon(loginController.trips[index].tripStartTimeDriver != null && loginController.trips[index].tripEndTimeDriver !=null ? Icons.circle :
-                                  loginController.trips[index].tripStartTimeDriver != null && loginController.trips[index].tripEndTimeDriver ==null ? Icons.drive_eta_rounded :
-                                  Icons.circle_outlined, color: Colors.white, size: 15),
+                                  Expanded(
+                                    child: Text(
+                                      getFirstWords(
+                                          loginController.vehicles
+                                              .firstWhere(
+                                                (vehicle) =>
+                                                    vehicle.vehicleNumber ==
+                                                    loginController.trips[index]
+                                                        .vehicleNumber,
+                                              )
+                                              .vehicleName,
+                                          2),
+                                      style: TextStyle(
+                                        color: Colors.white.withOpacity(.9),
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w300,
+                                      ),
+                                      overflow: TextOverflow
+                                          .ellipsis, // Truncate text with ellipsis
+                                    ),
+                                  ),
+                                  Icon(
+                                    loginController.trips[index]
+                                                    .tripStartTimeDriver !=
+                                                null &&
+                                            loginController.trips[index]
+                                                    .tripEndTimeDriver !=
+                                                null
+                                        ? Icons.circle
+                                        : Icons.circle_outlined,
+                                    color: Colors.white,
+                                    size: 15,
+                                  ),
                                 ],
                               ),
+
                               Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   // Text("${loginController.trips[index].tripStartLocation} - ${loginController.trips[index].tripDestination.}", style: const TextStyle(color:Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-                                  Text("${getFirstWords(loginController.trips[index].tripStartLocation,2)}  ${getFirstWords(loginController.trips[index].tripDestination,2)}",
-                                      style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                                  Text(
+                                      "${getFirstWords(loginController.trips[index].tripStartLocation, 2)}  ${getFirstWords(loginController.trips[index].tripDestination, 2)}",
+                                      style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold)),
                                   Container(
-                                    width: MediaQuery.of(context).size.width * 0.20,
+                                    width: MediaQuery.of(context).size.width *
+                                        0.20,
                                     color: greenlight,
                                     child: Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 3.0),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 3.0),
                                       child: Row(
                                         children: [
-                                          const Icon(Icons.calendar_today, color: Colors.white, size: 10,),
+                                          const Icon(
+                                            Icons.calendar_today,
+                                            color: Colors.white,
+                                            size: 10,
+                                          ),
                                           const SizedBox(width: 3),
                                           //Text(loginController.trips[index].tripDate, style: const TextStyle(color:Colors.white, fontSize: 10, fontWeight: FontWeight.w400)),
-                                          Text(DateFormat('dd/MM/yy').format(loginController.trips[index].tripDate), style: const TextStyle(color:Colors.white, fontSize: 10, fontWeight: FontWeight.w400)),
+                                          Text(
+                                              DateFormat('dd/MM/yy').format(
+                                                  loginController
+                                                      .trips[index].tripDate),
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.w400)),
                                         ],
                                       ),
                                     ),
                                   ),
                                   const SizedBox(height: 2),
                                   Container(
-                                    width: MediaQuery.of(context).size.width * 0.28,
+                                    width: MediaQuery.of(context).size.width *
+                                        0.28,
                                     color: greenlight,
                                     child: const Padding(
-                                      padding: EdgeInsets.symmetric(horizontal: 3.0),
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 3.0),
                                       child: Row(
                                         children: [
-                                          Icon(Icons.access_time_rounded, color: Colors.white, size: 10,),
+                                          Icon(
+                                            Icons.access_time_rounded,
+                                            color: Colors.white,
+                                            size: 10,
+                                          ),
                                           SizedBox(width: 3),
-                                          Text("12:00AM- 6:00PM", style: TextStyle(color:Colors.white, fontSize: 10, fontWeight: FontWeight.w400)),
+                                          Text("12:00AM- 6:00PM",
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.w400)),
                                         ],
                                       ),
                                     ),
@@ -346,97 +450,159 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget buildCurrentTrip() {
     return Column(
       children: [
-        Text("CURRENT TRIP", style: GoogleFonts.lato(color:primary, fontSize: 16, fontWeight: FontWeight.w700)),
+        Text("CURRENT TRIP",
+            style: GoogleFonts.lato(
+                color: primary, fontSize: 16, fontWeight: FontWeight.w700)),
         Container(
           decoration: BoxDecoration(
             color: greenlight.withOpacity(.1),
             borderRadius: BorderRadius.circular(20),
           ),
           margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-          padding: const EdgeInsets.only(top: 10, bottom:10, right: 20, left:20),
+          padding:
+              const EdgeInsets.only(top: 10, bottom: 10, right: 20, left: 20),
           child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Trip No: ${loginController.currentTrip!.tripNumber}", style: const TextStyle(color:primary, fontWeight: FontWeight.w400)),
-                      const SizedBox(height: 10,),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.35,
-                        child: Text(loginController.currentTrip!.tripStartLocation,
-                            // overflow: TextOverflow.ellipsis,
-                            maxLines: 2,
-                            style: const TextStyle(fontSize:16,color:greenlight, fontWeight: FontWeight.w800)),),
-                      Text(DateFormat('dd/MM/yy').format(loginController.currentTrip!.tripDate), style: const TextStyle(color:primary, fontWeight: FontWeight.w400, fontSize: 13)),
-                      Text(DateFormat('hh:mm a').format(loginController.currentTrip!.tripDate), style: const TextStyle(color: primary, fontWeight: FontWeight.w400, fontSize: 13),),
-                      const SizedBox(height: 15,),
-
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.35,
-                        child: Text(loginController.currentTrip!.tripDestination,
-                            // overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                          style: const TextStyle(fontSize:16,color:greenlight, fontWeight: FontWeight.w800)),),
-                      Text(DateFormat('dd/MM/yy').format(loginController.currentTrip!.tripEndTime), style: const TextStyle(color:primary, fontWeight: FontWeight.w400)),
-                      Text(DateFormat('hh:mm a').format(loginController.currentTrip!.tripEndTime), style: const TextStyle(color: primary, fontWeight: FontWeight.w400),),
-
-                      const SizedBox(height: 10),
-                      Text(loginController.currentTrip!.tripType, style: const TextStyle(fontSize:12, color:primary, fontWeight: FontWeight.w400)),
-                      const SizedBox(height: 8),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.35,
-                          child: Text(loginController.currentTrip!.notification ?? "",
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(color:Colors.grey, fontSize: 13, fontWeight: FontWeight.w400)),),
-                    ],
+                  Text("Trip No: ${loginController.currentTrip!.tripNumber}",
+                      style: const TextStyle(
+                          color: primary, fontWeight: FontWeight.w400)),
+                  const SizedBox(
+                    height: 10,
                   ),
                   SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.40,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(loginController.currentTrip!.tripStartTimeDriver != null && loginController.currentTrip!.tripEndTimeDriver ==null ? "In Progress" :
-                        loginController.currentTrip!.tripStartTimeDriver != null && loginController.currentTrip!.tripEndTimeDriver != null ? "Trip Completed":"Trip to Start", style: const TextStyle(color:greenlight, fontWeight: FontWeight.w500)),
-                        SizedBox(height: 10),
-                        Stack(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(25),
-                              child: Image.memory(
-                                base64Decode(loginController.currentvehicle!.vehiclePhoto),
-                                height: 140,
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 10,
-                              left: 10,
-                              child: Text(
-                                "${getFirstWords(loginController.currentvehicle!.vehicleName,2)}",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                    width: MediaQuery.of(context).size.width * 0.35,
+                    child: Text(loginController.currentTrip!.tripStartLocation,
+                        // overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                        style: const TextStyle(
+                            fontSize: 16,
+                            color: greenlight,
+                            fontWeight: FontWeight.w800)),
+                  ),
+                  Text(
+                      DateFormat('dd/MM/yy')
+                          .format(loginController.currentTrip!.tripDate),
+                      style: const TextStyle(
+                          color: primary,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 13)),
+                  Text(
+                    DateFormat('hh:mm a')
+                        .format(loginController.currentTrip!.tripDate),
+                    style: const TextStyle(
+                        color: primary,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 13),
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.35,
+                    child: Text(loginController.currentTrip!.tripDestination,
+                        // overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                        style: const TextStyle(
+                            fontSize: 16,
+                            color: greenlight,
+                            fontWeight: FontWeight.w800)),
+                  ),
+                  Text(
+                      DateFormat('dd/MM/yy')
+                          .format(loginController.currentTrip!.tripEndTime),
+                      style: const TextStyle(
+                          color: primary, fontWeight: FontWeight.w400)),
+                  Text(
+                    DateFormat('hh:mm a')
+                        .format(loginController.currentTrip!.tripEndTime),
+                    style: const TextStyle(
+                        color: primary, fontWeight: FontWeight.w400),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(loginController.currentTrip!.tripType,
+                      style: const TextStyle(
+                          fontSize: 12,
+                          color: primary,
+                          fontWeight: FontWeight.w400)),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.35,
+                    child: Text(loginController.currentTrip!.notification ?? "",
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w400)),
                   ),
                 ],
               ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.40,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                        loginController.currentTrip!.tripStartTimeDriver !=
+                                    null &&
+                                loginController
+                                        .currentTrip!.tripEndTimeDriver ==
+                                    null
+                            ? "In Progress"
+                            : loginController
+                                            .currentTrip!.tripStartTimeDriver !=
+                                        null &&
+                                    loginController
+                                            .currentTrip!.tripEndTimeDriver !=
+                                        null
+                                ? "Trip Completed"
+                                : "Trip to Start",
+                        style: const TextStyle(
+                            color: greenlight, fontWeight: FontWeight.w500)),
+                    SizedBox(height: 10),
+                    Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(25),
+                          child: Image.memory(
+                            base64Decode(
+                                loginController.currentvehicle!.vehiclePhoto),
+                            height: 140,
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 10,
+                          left: 10,
+                          child: Text(
+                            "${getFirstWords(loginController.currentvehicle!.vehicleName, 2)}",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
         Container(
-            margin: const EdgeInsets.only(top:5,bottom: 10, left: 30, right: 30),
+            margin:
+                const EdgeInsets.only(top: 5, bottom: 10, left: 30, right: 30),
             child: Divider(color: greenlight.withOpacity(.3), thickness: 1)),
-
       ],
     );
   }
+
   Widget buildWorkChart() {
     // List<FlSpot> spots = List.generate(12, (index) => FlSpot(index + 1, getTripsForMonth(index + 1).toDouble()));
 
@@ -451,7 +617,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(left: 10.0),
-                    child: Text("WORK CHART", style: GoogleFonts.lato(color: primary, fontSize: 16, fontWeight: FontWeight.w700)),
+                    child: Text("WORK CHART",
+                        style: GoogleFonts.lato(
+                            color: primary,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700)),
                   ),
                 ],
               ),
@@ -470,9 +640,21 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(top: 5.0),
-                          child: Text("Total Hours", style: const TextStyle(color: Colors.grey, fontSize: 8, fontWeight: FontWeight.w400)),
+                          child: Text("Total Hours",
+                              style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 8,
+                                  fontWeight: FontWeight.w400)),
                         ),
-                        Text(loginController.chartData==null?'0':loginController.chartData!.totalHours.toStringAsFixed(2), style: const TextStyle(color: greenlight, fontSize: 12, fontWeight: FontWeight.w900)),
+                        Text(
+                            loginController.chartData == null
+                                ? '0'
+                                : loginController.chartData!.totalHours
+                                    .toStringAsFixed(2),
+                            style: const TextStyle(
+                                color: greenlight,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w900)),
                         Image.asset('assets/graph/graph1.png', width: 100),
                       ],
                     ),
@@ -488,9 +670,21 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(top: 5.0),
-                          child: Text("Total Trips", style: const TextStyle(color: Colors.grey, fontSize: 8, fontWeight: FontWeight.w400)),
+                          child: Text("Total Trips",
+                              style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 8,
+                                  fontWeight: FontWeight.w400)),
                         ),
-                        Text(loginController.chartData==null?'0':loginController.chartData!.date.length.toString(), style: const TextStyle(color: greenlight, fontSize: 12, fontWeight: FontWeight.w900)),
+                        Text(
+                            loginController.chartData == null
+                                ? '0'
+                                : loginController.chartData!.date.length
+                                    .toString(),
+                            style: const TextStyle(
+                                color: greenlight,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w900)),
                         Image.asset('assets/graph/graph1.png', width: 100),
                       ],
                     ),
@@ -506,9 +700,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(top: 5.0),
-                          child: Text("This Year", style: const TextStyle(color: Colors.grey, fontSize: 8, fontWeight: FontWeight.w400)),
+                          child: Text("This Year",
+                              style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 8,
+                                  fontWeight: FontWeight.w400)),
                         ),
-                        Text(loginController.totalTripsThisYear.toString(), style: const TextStyle(color: greenlight, fontSize: 12, fontWeight: FontWeight.w900)),
+                        Text(loginController.totalTripsThisYear.toString(),
+                            style: const TextStyle(
+                                color: greenlight,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w900)),
                         Image.asset('assets/graph/graph1.png', width: 100),
                       ],
                     ),
@@ -540,8 +742,10 @@ class _HomeScreenState extends State<HomeScreen> {
               borderData: FlBorderData(show: false),
               titlesData: FlTitlesData(
                 show: true,
-                topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                topTitles:
+                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                rightTitles:
+                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 bottomTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
@@ -573,7 +777,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   color: primary,
                   barWidth: 2,
-
                 ),
               ],
             ),
@@ -695,69 +898,151 @@ class _HomeScreenState extends State<HomeScreen> {
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
               ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 15.0, horizontal: 15),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 15.0, horizontal: 15),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.start,
+                    //   children: [
+                    //     ClipRRect(
+                    //       borderRadius: BorderRadius.circular(25),
+                    //       child: Image.memory(
+                    //         base64Decode(
+                    //             loginController.currentvehicle!.vehiclePhoto),
+                    //         height: 150,
+                    //       ),
+                    //     ),
+                    //     SizedBox(width: 20),
+                    //     Column(
+                    //       crossAxisAlignment: CrossAxisAlignment.start,
+                    //       children: [
+                    //         Text(
+                    //           "${getFirstWords(loginController.currentvehicle!.vehicleName, 2)}",
+                    //           style: GoogleFonts.lato(
+                    //               color: primary,
+                    //               fontWeight: FontWeight.bold,
+                    //               fontSize: 24),
+                    //         ),
+                    //         SizedBox(height: 10),
+                    //         Text(
+                    //           loginController.currentvehicle!.vehicleType,
+                    //           style: GoogleFonts.lato(
+                    //               color: primary,
+                    //               fontWeight: FontWeight.bold,
+                    //               fontSize: 16),
+                    //         ),
+                    //         SizedBox(height: 10),
+                    //         Text(
+                    //           loginController.currentvehicle!.vehicleNumber,
+                    //           style: GoogleFonts.lato(
+                    //               color: greenlight,
+                    //               fontWeight: FontWeight.bold,
+                    //               fontSize: 14),
+                    //         ),
+                    //         SizedBox(height: 10),
+                    //         Center(
+                    //           child: ElevatedButton(
+                    //             onPressed: () {
+                    //               // await controller.getWorkshopData(loginController.currentvehicle!);
+                    //               // while (controller.isLoading) {
+                    //               //   await Future.delayed(Duration(seconds: 1));
+                    //               // }
+                    //               Get.offAll(() => CarDetailScreen(
+                    //                   loginController.currentvehicle!, true));
+                    //             },
+                    //             style: ButtonStyle(
+                    //               elevation: WidgetStateProperty.all(8),
+                    //               backgroundColor:
+                    //                   WidgetStateProperty.all(primary),
+                    //             ),
+                    //             child: Text(
+                    //               'SELECT CAR',
+                    //               style: GoogleFonts.lato(
+                    //                   fontSize: 16,
+                    //                   color: Colors.white,
+                    //                   fontWeight: FontWeight.bold),
+                    //             ),
+                    //           ),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ],
+                    // ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                       ClipRRect(
-                            borderRadius: BorderRadius.circular(25),
-                            child: Image.memory(
-                              base64Decode(loginController.currentvehicle!.vehiclePhoto),
-                              height: 150,
-                            ),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(25),
+                          child: Image.memory(
+                            base64Decode(
+                                loginController.currentvehicle!.vehiclePhoto),
+                            height: 150,
+                            width: 150, // Added width to maintain aspect ratio
+                            fit: BoxFit
+                                .cover, // Ensures the image fits within the given space
                           ),
-
-                        SizedBox(width: 20),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "${getFirstWords(loginController.currentvehicle!.vehicleName,2)}",
-                              style: GoogleFonts.lato(color: primary,
+                        ),
+                        const SizedBox(width: 20),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                getFirstWords(loginController.currentvehicle!.vehicleName, 2),
+                                style: GoogleFonts.lato(
+                                  color: primary,
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 24),),
-                            SizedBox(height: 10),
-                            Text(
-                              loginController.currentvehicle!.vehicleType,
-                              style: GoogleFonts.lato(color: primary,
+                                  fontSize: 24,
+                                ),
+                                overflow: TextOverflow
+                                    .ellipsis, // Avoids text overflow
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                loginController.currentvehicle!.vehicleType,
+                                style: GoogleFonts.lato(
+                                  color: primary,
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 16),),
-                            SizedBox(height: 10),
-                            Text(
-                              loginController.currentvehicle!.vehicleNumber,
-                              style: GoogleFonts.lato(color: greenlight,
+                                  fontSize: 16,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                loginController.currentvehicle!.vehicleNumber,
+                                style: GoogleFonts.lato(
+                                  color: greenlight,
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 14),),
-                            SizedBox(height: 10),
-                            Center(
-                              child: ElevatedButton(
+                                  fontSize: 14,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 10),
+                              ElevatedButton(
                                 onPressed: () {
-                                  // await controller.getWorkshopData(loginController.currentvehicle!);
-                                  // while (controller.isLoading) {
-                                  //   await Future.delayed(Duration(seconds: 1));
-                                  // }
-                                  Get.offAll(() =>
-                                      CarDetailScreen(loginController.currentvehicle!, true));
+                                  Get.offAll(() => CarDetailScreen(
+                                      loginController.currentvehicle!, true));
                                 },
                                 style: ButtonStyle(
-                                  elevation: WidgetStateProperty.all(8),
-                                  backgroundColor: WidgetStateProperty.all(primary),
+                                  elevation: MaterialStateProperty.all(8),
+                                  backgroundColor:
+                                      MaterialStateProperty.all(primary),
                                 ),
                                 child: Text(
                                   'SELECT CAR',
-                                  style: GoogleFonts.lato(fontSize: 16,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold),
+                                  style: GoogleFonts.lato(
+                                    fontSize: 16,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
-                            ),
-
-                          ],
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -765,15 +1050,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     SizedBox(height: 10),
                     Divider(color: greenlight, thickness: 1),
                     SizedBox(height: 10),
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           'CHANGE CAR',
-                          style: GoogleFonts.lato(color: primary,
+                          style: GoogleFonts.lato(
+                              color: primary,
                               fontWeight: FontWeight.bold,
-                              fontSize: 16),),
+                              fontSize: 16),
+                        ),
                         /*ElevatedButton(
                             style: ButtonStyle(
                               elevation: WidgetStateProperty.all(5),
@@ -1016,12 +1302,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                       decoration: InputDecoration(
                         labelText: 'Enter Vehicle Number',
-                        labelStyle: GoogleFonts.lato(fontSize: 13,
+                        labelStyle: GoogleFonts.lato(
+                            fontSize: 13,
                             color: primary,
                             fontWeight: FontWeight.w500),
                         enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color: primary.withOpacity(.7)),
+                          borderSide:
+                              BorderSide(color: primary.withOpacity(.7)),
                         ),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: primary),
@@ -1044,12 +1331,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 10),
                     ElevatedButton(
-
                       onPressed: () {
                         String vehicleNumber = carNumberController.text;
                         Vehicle selectedCar = loginController.vehicles
                             .firstWhere((vehicle) =>
-                        vehicle.vehicleNumber == vehicleNumber);
+                                vehicle.vehicleNumber == vehicleNumber);
                         Get.back();
                         Get.dialog(
                           AlertDialog(
@@ -1057,7 +1343,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             content: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-
                                 Container(
                                   height: 200,
                                   decoration: BoxDecoration(
@@ -1068,14 +1353,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                       fit: BoxFit.fill,
                                     ),
                                   ),
-
                                   child: Stack(
                                     fit: StackFit.expand,
                                     children: [
                                       DecoratedBox(
                                         decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                              10),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
                                           border: Border.all(
                                               color: greenlight.withOpacity(.2),
                                               width: 2),
@@ -1087,20 +1371,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                               top: 15,
                                               bottom: 10.0),
                                           child: Column(
-                                            mainAxisAlignment: MainAxisAlignment
-                                                .spaceBetween,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
                                             children: [
                                               Row(
-                                                mainAxisAlignment: MainAxisAlignment
-                                                    .start,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
                                                 children: [
                                                   Text(selectedCar.vehicleName,
                                                       style: TextStyle(
                                                           color: Colors.white
                                                               .withOpacity(.9),
                                                           fontSize: 16,
-                                                          fontWeight: FontWeight
-                                                              .w500)),
+                                                          fontWeight:
+                                                              FontWeight.w500)),
                                                 ],
                                               ),
                                             ],
@@ -1113,7 +1397,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 const SizedBox(height: 10),
                                 Text(
                                     'Car Number : ${selectedCar.vehicleNumber}',
-                                    style: const TextStyle(color: primary,
+                                    style: const TextStyle(
+                                        color: primary,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600)),
                               ],
@@ -1126,20 +1411,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                   carNumberController.clear();
                                   Get.back();
                                 },
-                                child: Text("CANCEL", style: const TextStyle(
-                                    color: primary, fontSize: 16)),
+                                child: Text("CANCEL",
+                                    style: const TextStyle(
+                                        color: primary, fontSize: 16)),
                               ),
                               TextButton(
                                 onPressed: () {
-
                                   Get.back();
                                   carNumberController.clear();
                                   loginController.currentvehicle = selectedCar;
                                   // Get.offAll(() =>
                                   //     CarDetailScreen(selectedCar, true));
                                 },
-                                child: Text("OK", style: const TextStyle(
-                                    color: primary, fontSize: 16)),
+                                child: Text("OK",
+                                    style: const TextStyle(
+                                        color: primary, fontSize: 16)),
                               ),
                             ],
                           ),
@@ -1151,7 +1437,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       child: Text(
                         'CHECK CAR',
-                        style: GoogleFonts.lato(fontSize: 16,
+                        style: GoogleFonts.lato(
+                            fontSize: 16,
                             color: Colors.white,
                             fontWeight: FontWeight.bold),
                       ),
@@ -1167,7 +1454,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
-
-
-
