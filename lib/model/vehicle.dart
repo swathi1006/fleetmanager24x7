@@ -1,5 +1,4 @@
 import 'package:fleet_manager_driver_app/model/vehicleLocation.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Vehicle{
   String vehicleName;
