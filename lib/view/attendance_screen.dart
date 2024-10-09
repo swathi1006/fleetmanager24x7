@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:fleet_manager_driver_app/service/database.dart';
+import 'package:fleet_manager_driver_app/service/global.dart';
 import 'package:fleet_manager_driver_app/utils/color.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -63,35 +65,47 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   }
 
   void _onCheckInOutPressed() async {
-    if (!isCheckedIn) {
-      // Check-in logic
-      setState(() {
-        isCheckedIn = true;
-        buttonText = "Check Out";
-        checkInDateTime = DateTime.now();
-        checkinTime = "Checked-in at ${DateFormat('hh:mm a').format(checkInDateTime!)}";
-        startTimer();
-      });
+  final userId = loggedInUserId;  
+  
+  final driverId = loggedInDriverId;  
+  final driverUsername = loggedInName;  
+  
+print(driverId);
+  if (!isCheckedIn) {
+    // Check-in logic
+    setState(() {
+      isCheckedIn = true;
+      buttonText = "Check Out";
+      checkInDateTime = DateTime.now();
+      checkinTime = "Checked-in at ${DateFormat('hh:mm a').format(checkInDateTime!)}";
+      startTimer();
+    });
 
-      // Save the check-in status and time
-      await _saveCheckInStatus(isCheckedIn, checkInDateTime);
+    // Save the check-in status and time locally
+    await _saveCheckInStatus(isCheckedIn, checkInDateTime);
 
-      _showToast("Attendance marked successfully");
-    } else {
-      // Check-out logic
-      setState(() {
-        isCheckedIn = false;
-        buttonText = "Check In";
-        _timer?.cancel(); // Stop the timer when checked out
-        percentage = 0.0; // Reset the progress
-      });
+    // Call the MongoDB check-in function
+    await checkInAttendance(userId, driverId, driverUsername);
 
-      // Clear the check-in status
-      await _clearCheckInStatus();
+    _showToast("Attendance marked successfully");
+  } else {
+    // Check-out logic
+    setState(() {
+      isCheckedIn = false;
+      buttonText = "Check In";
+      _timer?.cancel(); // Stop the timer when checked out
+      percentage = 0.0; // Reset the progress
+    });
 
-      _showToast("Attendance mark ended successfully");
-    }
+    // Clear the check-in status locally
+    await _clearCheckInStatus();
+
+    // Call the MongoDB check-out function
+    await checkOutAttendance(userId);
+
+    _showToast("Attendance mark ended successfully");
   }
+}
 
   void startTimer() {
     const oneMinute = Duration(minutes: 1);
@@ -104,19 +118,21 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
 
   void calculateProgress() {
     if (checkInDateTime != null) {
-      final now = DateTime.now();
-      final elapsed = now.difference(checkInDateTime!).inMinutes; // Elapsed minutes since check-in
-      final totalMinutes = 12 * 60; // Total minutes in 12 hours
+        final now = DateTime.now();
+        final elapsed = now.difference(checkInDateTime!).inMinutes; // Elapsed minutes since check-in
 
-      setState(() {
-        percentage = elapsed / totalMinutes;
-        if (percentage >= 1.0) {
-          percentage = 1.0; // Cap at 100% once 12 hours have passed
-          _timer?.cancel(); // Stop the timer when the period is over
-        }
-      });
+        // For testing: change 12 * 60 (720 minutes for 12 hours) to a smaller value
+        const totalMinutes = 12 * 60; // For testing, set total to 12 minutes
+
+        setState(() {
+            percentage = elapsed / totalMinutes;
+            if (percentage >= 1.0) {
+                percentage = 1.0; // Cap at 100% once 12 minutes have passed (for testing)
+                _timer?.cancel(); // Stop the timer when the period is over
+            }
+        });
     }
-  }
+}
 
   void _showToast(String message) {
     Fluttertoast.showToast(

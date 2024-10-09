@@ -1,6 +1,10 @@
 import 'package:mongo_dart/mongo_dart.dart';
 
 String loggedInUserId = '';
+String loggedInDriverId='';
+String loggedInName='';
+
+
 Db? db;
 DbCollection? collection_drivers;
 DbCollection? collection_temp_vehicles;

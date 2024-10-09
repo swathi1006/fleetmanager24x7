@@ -4,10 +4,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 
-import 'package:fleet_manager_driver_app/controller/main_screen_controller.dart';
 import 'package:fleet_manager_driver_app/utils/color.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,7 +13,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../model/vehicle.dart';
 import '../model/workShopMovement.dart';
 import '../service/global.dart';
 import '../view/login_screen.dart';

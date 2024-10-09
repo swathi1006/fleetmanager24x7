@@ -39,6 +39,9 @@ class LoginController extends GetxController{
     if (prefs.containsKey('userName') && prefs.containsKey('password') && prefs.containsKey('id'))
       print(prefs.getString('userName')!);
       loggedInUserId = prefs.getString('id')!;
+      loggedInDriverId = prefs.getString('name')!;
+      loggedInName = prefs.getString('userName')!;
+
 
     var driver = await collection_drivers?.findOne(where.eq('_id', ObjectId.parse(loggedInUserId)));
 
@@ -277,10 +280,14 @@ class LoginController extends GetxController{
     var driver = await collection_drivers?.findOne(where.eq('driverId', usernameController.text));
 
     progress.value = 0.3; // Progress after fetching data
+    
 
     if (driver != null) {
       if (usernameController.text == driver['driverId'] && passwordController.text == driver['driverPassword']) {
         loggedInUserId = driver['_id'].toHexString();
+        // loggedInDriverId = driver['driverId'];
+        loggedInName = driver['driverName'];
+
 
         progress.value = 0.5; // Progress after successful login credentials check
 
@@ -313,7 +320,9 @@ class LoginController extends GetxController{
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('userName', usernameController.text);
         prefs.setString('password', passwordController.text);
+        prefs.setString('name', loggedInDriverId);// added
         prefs.setString('id', loggedInUserId);
+        
 
         progress.value = 0.9; // Progress after saving data in SharedPreferences
 

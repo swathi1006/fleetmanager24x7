@@ -123,44 +123,132 @@ Future<void> reportIssue(String tripNumber, String vehicleNumber, String driverU
 }
 //new  functions added below
 
-Future<void> checkInAttendance(String userId) async {
-  final currentDate = DateTime.now();
-  final query = where
-    .eq('userId', userId)
-    .gte('checkInTime', DateTime(currentDate.year, currentDate.month, currentDate.day).toIso8601String())
-    .lte('checkInTime', DateTime(currentDate.year, currentDate.month, currentDate.day, 23, 59, 59).toIso8601String());
+// Future<void> checkInAttendance(String userId) async {
+//   final currentDate = DateTime.now();                           
+//   final query = where
+//     .eq('userId', userId)
+//     .gte('checkInTime', DateTime(currentDate.year, currentDate.month, currentDate.day).toIso8601String())
+//     .lte('checkInTime', DateTime(currentDate.year, currentDate.month, currentDate.day, 23, 59, 59).toIso8601String());
 
-  // Check if an attendance record exists for today
-  final existingAttendance = await collection_attendance?.findOne(query);
+//   // Check if an attendance record exists for today
+//   final existingAttendance = await collection_attendance?.findOne(query);
   
-  if (existingAttendance == null) {
-    // If no attendance found, create a new one
+//   if (existingAttendance == null) {
+//     // If no attendance found, create a new one
+//     final newAttendance = Attendance(
+//       userId: userId,
+//       checkInTime: DateTime.now(),
+//     ).toMap();
+    
+//     await collection_attendance?.insertOne(newAttendance);
+//   } else {
+//     print("Attendance record already exists for today.");
+//   }
+// }
+
+// Future<void> checkOutAttendance(String userId) async {
+//   final currentDate = DateTime.now();
+//   final query = where
+//     .eq('userId', userId)
+//     .gte('checkInTime', DateTime(currentDate.year, currentDate.month, currentDate.day).toIso8601String())
+//     .lte('checkInTime', DateTime(currentDate.year, currentDate.month, currentDate.day, 23, 59, 59).toIso8601String());
+
+//   // Find the attendance record for today
+//   final attendanceRecord = await collection_attendance?.findOne(query);
+  
+//   if (attendanceRecord != null) {
+//     // Update with check-out time
+//     final update = modify.set('checkOutTime', DateTime.now().toIso8601String());
+//     await collection_attendance?.updateOne(query, update);
+//   } else {
+//     print("No attendance record found for check-out.");
+//   }
+// }
+Future<void> checkInAttendance(String userId, String driverId, String driverUsername) async {
+  final currentDate = DateTime.now();
+  final query = where.eq('userId', userId);
+
+  // Check if an attendance record exists for the user
+  final attendanceRecord = await collection_attendance?.findOne(query);
+
+  if (attendanceRecord == null) {
+    // If no record found, create a new attendance object
     final newAttendance = Attendance(
       userId: userId,
-      checkInTime: DateTime.now(),
+      driverId: driverId,
+      driverUsername: driverUsername,
+      attendanceRecords: [
+        AttendanceRecord(checkInTime: DateTime.now())
+      ],
     ).toMap();
-    
+
     await collection_attendance?.insertOne(newAttendance);
   } else {
-    print("Attendance record already exists for today.");
+    // Update the existing record, add today's attendance if not already added
+    List<dynamic> records = attendanceRecord['attendanceRecords'];
+    bool alreadyCheckedIn = records.any((record) {
+      final checkInDate = DateTime.parse(record['checkInTime']);
+      return checkInDate.year == currentDate.year &&
+             checkInDate.month == currentDate.month &&
+             checkInDate.day == currentDate.day;
+    });
+
+    if (!alreadyCheckedIn) {
+      records.add(AttendanceRecord(checkInTime: DateTime.now()).toMap());
+      final update = modify.set('attendanceRecords', records);
+      await collection_attendance?.updateOne(query, update);
+    } else {
+      print("Already checked in today.");
+    }
   }
 }
 
 Future<void> checkOutAttendance(String userId) async {
   final currentDate = DateTime.now();
-  final query = where
-    .eq('userId', userId)
-    .gte('checkInTime', DateTime(currentDate.year, currentDate.month, currentDate.day).toIso8601String())
-    .lte('checkInTime', DateTime(currentDate.year, currentDate.month, currentDate.day, 23, 59, 59).toIso8601String());
+  final query = where.eq('userId', userId);
 
   // Find the attendance record for today
   final attendanceRecord = await collection_attendance?.findOne(query);
-  
+
   if (attendanceRecord != null) {
-    // Update with check-out time
-    final update = modify.set('checkOutTime', DateTime.now().toIso8601String());
+    List<dynamic> records = attendanceRecord['attendanceRecords'];
+    for (var record in records) {
+      final checkInDate = DateTime.parse(record['checkInTime']);
+      if (checkInDate.year == currentDate.year &&
+          checkInDate.month == currentDate.month &&
+          checkInDate.day == currentDate.day &&
+          record['checkOutTime'] == null) {
+        record['checkOutTime'] = DateTime.now().toIso8601String();
+        break;
+      }
+    }
+    final update = modify.set('attendanceRecords', records);
     await collection_attendance?.updateOne(query, update);
   } else {
     print("No attendance record found for check-out.");
   }
 }
+
+// Future<Map<String, dynamic>?> getDriverDetails(String userId) async {
+//   try {
+//     // Ensure that the collection is initialized
+//     if (db == null || collection_drivers == null) {
+//       db = Db('mongodb://your-mongo-db-uri');  // Add your MongoDB URI
+//       await db?.open();
+//       collection_drivers = db?.collection('drivers');  // Assuming 'drivers' is the collection name
+//     }
+
+//     // Fetch the driver details based on the userId
+//     final driver = await collection_drivers?.findOne({'userId': userId});
+
+//     if (driver != null) {
+//       return driver;  // Return the driver's details as a map
+//     } else {
+//       print("Driver not found for userId: $userId");
+//       return null;
+//     }
+//   } catch (e) {
+//     print("Error fetching driver details: $e");
+//     return null;
+//   }
+// }
