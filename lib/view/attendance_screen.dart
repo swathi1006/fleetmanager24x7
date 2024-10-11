@@ -71,6 +71,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   final driverUsername = loggedInName;  
   
 print(driverId);
+
   if (!isCheckedIn) {
     // Check-in logic
     setState(() {
@@ -85,7 +86,7 @@ print(driverId);
     await _saveCheckInStatus(isCheckedIn, checkInDateTime);
 
     // Call the MongoDB check-in function
-    await checkInAttendance(userId, driverId, driverUsername);
+    await checkInAttendance(userId, driverId,);
 
     _showToast("Attendance marked successfully");
   } else {
