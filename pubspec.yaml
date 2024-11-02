@@ -76,6 +76,7 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.14.1
 
 
 flutter:
@@ -120,3 +121,8 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+flutter_launcher_icons:
+  ios: "AppIcon"
+  image_path: "assets/logo/fleet_mngr.png"
+  remove_alpha_ios: true

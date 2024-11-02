@@ -1066,99 +1066,107 @@ class _NavigationScreenState extends State<NavigationScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ClipRRect(
-                              borderRadius: BorderRadius.circular(25),
-                              child: Image.memory(
-                                  base64Decode(selectedVehicle.vehiclePhoto),
-                                  height: 130,
-                                  width: 130)),
-                        ],
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ClipRRect(
+                                borderRadius: BorderRadius.circular(25),
+                                child: Image.memory(
+                                    base64Decode(selectedVehicle.vehiclePhoto),
+                                    height: 130,
+                                    width: 130)),
+                          ],
+                        ),
                       ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            width: Get.width * .5,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: greenlight.withOpacity(.1),
-                              borderRadius: BorderRadius.circular(30),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              width: Get.width * .5,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: greenlight.withOpacity(.1),
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Row(children: [
+                                const Icon(Icons.location_pin,
+                                    color: greenlight, size: 25),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                      _currentPlaceSubAdministrativeArea != ''
+                                          ? _currentPlaceSubAdministrativeArea!
+                                          : _currentPlaceSubLocality != ''
+                                              ? _currentPlaceSubLocality!
+                                              : _currentPlaceLocality!,
+                                      style: const TextStyle(
+                                          color: primary,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis),
+                                ),
+                              ]),
                             ),
-                            child: Row(children: [
-                              const Icon(Icons.location_pin,
-                                  color: greenlight, size: 25),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Text(
-                                    _currentPlaceSubAdministrativeArea != ''
-                                        ? _currentPlaceSubAdministrativeArea!
-                                        : _currentPlaceSubLocality != ''
-                                            ? _currentPlaceSubLocality!
-                                            : _currentPlaceLocality!,
-                                    style: const TextStyle(
-                                        color: primary,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w600),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis),
-                              ),
-                            ]),
-                          ),
-                          const SizedBox(height: 15),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ElevatedButton(
-                                onPressed: () async {
-                                  bool pinValidity =
-                                      await showCheckPinOverLay();
-                                  if (pinValidity) {
-                                    await updateTripStatus(
-                                        loginController.user!.userName,
-                                        loginController
-                                            .currentTrip!.tripNumber);
-                                    onPauseTrip();
-                                    Get.offAll(() => MainScreen());
-                                  }
-                                },
-                                style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all(greenlight),
-                                  elevation: MaterialStateProperty.all(5),
-                                ),
-                                child: const Text(
-                                  'PAUSE',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ),
-                              const SizedBox(width: 20),
-                              ElevatedButton(
-                                  onPressed: () {
-                                    // print("Dashboard");
-                                    showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return buildStopAlert();
-                                      },
-                                    );
-                                    onTripEnd();
+                            const SizedBox(height: 15),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    bool pinValidity =
+                                        await showCheckPinOverLay();
+                                    if (pinValidity) {
+                                      await updateTripStatus(
+                                          loginController.user!.userName,
+                                          loginController
+                                              .currentTrip!.tripNumber);
+                                      onPauseTrip();
+                                      Get.offAll(() => MainScreen());
+                                    }
                                   },
                                   style: ButtonStyle(
                                     backgroundColor:
-                                        MaterialStateProperty.all(primary),
+                                        MaterialStateProperty.all(greenlight),
                                     elevation: MaterialStateProperty.all(5),
                                   ),
                                   child: const Text(
-                                    'STOP',
+                                    'PAUSE',
                                     style: TextStyle(color: Colors.white),
-                                  )),
-                            ],
-                          ),
-                        ],
+                                  ),
+                                ),
+                                const SizedBox(width: 20),
+                                ElevatedButton(
+                                    onPressed: () {
+                                      // print("Dashboard");
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return buildStopAlert();
+                                        },
+                                      );
+                                      onTripEnd();
+                                    },
+                                    style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all(primary),
+                                      elevation: MaterialStateProperty.all(5),
+                                    ),
+                                    child: const Text(
+                                      'STOP',
+                                      style: TextStyle(color: Colors.white),
+                                    )),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
