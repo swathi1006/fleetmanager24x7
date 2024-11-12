@@ -1,6 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:fleet_manager_driver_app/model/vehicle.dart';
+//import 'package:fleet_manager_driver_app/model/vehicle.dart';
 import 'package:fleet_manager_driver_app/utils/color.dart';
 import 'package:fleet_manager_driver_app/view/navigation_screen.dart';
 import 'package:flutter/material.dart';

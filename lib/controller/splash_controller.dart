@@ -1,5 +1,5 @@
 import 'package:fleet_manager_driver_app/widget/loader.dart';
-import 'package:flutter/cupertino.dart';
+//import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -14,7 +14,7 @@ class SplashController extends GetxController {
   LoginController loginController = Get.put(LoginController());
   RxDouble opacity = RxDouble(0.0);
   TextEditingController pinController = TextEditingController();
-  RxBool _obscureText = true.obs;
+  final RxBool _obscureText = true.obs;
   RxBool isloader = false.obs;
 
   @override
@@ -111,7 +111,7 @@ class SplashController extends GetxController {
                                 if (loginController.user!.pin ==
                                     int.parse(pinController.text)) {
                                   while (loginController.isloading.value) {
-                                    await Future.delayed(Duration(seconds: 1));
+                                    await Future.delayed(const Duration(seconds: 1));
                                   }
                                   Get.offAll(() => MainScreen());
                                 } else {

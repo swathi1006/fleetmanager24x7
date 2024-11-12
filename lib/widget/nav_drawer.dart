@@ -5,11 +5,11 @@ import 'package:get/get.dart';
 
 import '../controller/home_controller.dart';
 import '../controller/login_controller.dart';
-import '../service/global.dart';
+//import '../service/global.dart';
 import '../utils/color.dart';
 
 class NavDrawer extends StatelessWidget {
-  NavDrawer({Key? key}) : super(key: key);
+  NavDrawer({super.key});
   final HomeController homeController = Get.find();
   LoginController loginController = Get.put(LoginController());
 
@@ -73,7 +73,7 @@ class NavDrawer extends StatelessWidget {
                           const SizedBox(height: 5),
                            Text(
                              loginController.user?.mobile !=null ?loginController.user!.mobile.toString():'',
-                            style: TextStyle(fontSize: 18, color: Colors.white70, fontWeight: FontWeight.w600),
+                            style: const TextStyle(fontSize: 18, color: Colors.white70, fontWeight: FontWeight.w600),
                           ),
                           const Divider(
                             thickness: 1.5,
@@ -89,7 +89,7 @@ class NavDrawer extends StatelessWidget {
                           const SizedBox(height: 5),
                           Text(
                             loginController.user!.location ?? '',
-                            style: TextStyle(fontSize: 18, color: Colors.white70, fontWeight: FontWeight.w600),
+                            style: const TextStyle(fontSize: 18, color: Colors.white70, fontWeight: FontWeight.w600),
                           ),
                           const Divider(
                             thickness: 1.5,
@@ -105,7 +105,7 @@ class NavDrawer extends StatelessWidget {
                           const SizedBox(height: 10),
                           Text(
                             loginController.user?.dlNumber!=null ? loginController.user!.dlNumber:'',
-                            style: TextStyle(fontSize: 18, color: Colors.white70, fontWeight: FontWeight.w600),
+                            style: const TextStyle(fontSize: 18, color: Colors.white70, fontWeight: FontWeight.w600),
                           ),
                           const Divider(
                             thickness: 1.5,
@@ -121,7 +121,7 @@ class NavDrawer extends StatelessWidget {
                           const SizedBox(height: 10),
                           Text(
                             loginController.user?.dlExpiry != null ? DateFormat('dd/MM/yy').format(loginController.user!.dlExpiry):"",
-                            style: TextStyle(fontSize: 18, color: Colors.white70, fontWeight: FontWeight.w600),
+                            style: const TextStyle(fontSize: 18, color: Colors.white70, fontWeight: FontWeight.w600),
                           ),
                           const Divider(
                             thickness: 1.5,
@@ -160,12 +160,12 @@ class NavDrawer extends StatelessWidget {
                               
                                   ElevatedButton(
                                       style: ButtonStyle(
-                                        backgroundColor: MaterialStateProperty.all(Colors.white54),
+                                        backgroundColor: WidgetStateProperty.all(Colors.white54),
                                       ),
                                       onPressed: (){
                                         homeController.logout();
                                       },
-                                      child: Text('LOGOUT',style: TextStyle(color: secondary),)),
+                                      child: const Text('LOGOUT',style: TextStyle(color: secondary),)),
                               
                                 ],
                               ),

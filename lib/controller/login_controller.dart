@@ -36,8 +36,9 @@ class LoginController extends GetxController{
     super.onInit();
     isloading(true);
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (prefs.containsKey('userName') && prefs.containsKey('password') && prefs.containsKey('id'))
+    if (prefs.containsKey('userName') && prefs.containsKey('password') && prefs.containsKey('id')) {
       print(prefs.getString('userName')!);
+    }
       loggedInUserId = prefs.getString('id')!;
       loggedInDriverId = prefs.getString('driverId')!;
       //loggedInName = prefs.getString('userName')!;

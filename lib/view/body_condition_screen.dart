@@ -35,8 +35,8 @@ class _BodyConditionScreenState extends State<BodyConditionScreen> {
           //front View
           scratchData.scratchFV.startsWith('assets')?
           Container(
-            margin: EdgeInsets.symmetric(vertical: 30),
-            child:Center(child:Text("No scratches on front",style: TextStyle(color: primary),)),
+            margin: const EdgeInsets.symmetric(vertical: 30),
+            child:const Center(child:Text("No scratches on front",style: TextStyle(color: primary),)),
           ):
           GestureDetector(
             onTap: scratchData.scratchOrgLsv?.length !=0 ? (){
@@ -74,7 +74,7 @@ class _BodyConditionScreenState extends State<BodyConditionScreen> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Padding(
-                              padding:  EdgeInsets.only(top:10.0),
+                              padding:  const EdgeInsets.only(top:10.0),
                               child: Text('FRONT VIEW',style: GoogleFonts.lato(color: Colors.black,fontSize: 20,fontWeight: FontWeight.w800),),
                             ),
                           ],
@@ -89,8 +89,8 @@ class _BodyConditionScreenState extends State<BodyConditionScreen> {
           //backview
           scratchData.scratchBV.startsWith('assets')?
           Container(
-            margin: EdgeInsets.symmetric(vertical: 30),
-            child:Center(child:Text("No scratches on back",style: TextStyle(color: primary))),
+            margin: const EdgeInsets.symmetric(vertical: 30),
+            child:const Center(child:Text("No scratches on back",style: TextStyle(color: primary))),
           ):
           GestureDetector(
             onTap: scratchData.scratchOrgBv?.length !=0 ? (){
@@ -144,8 +144,8 @@ class _BodyConditionScreenState extends State<BodyConditionScreen> {
           //rightsideview
           scratchData.scratchRSV.startsWith('assets') ?
           Container(
-            margin: EdgeInsets.symmetric(vertical: 30),
-            child:Center(child:Text("No scratches on right side",style: TextStyle(color: primary))),
+            margin: const EdgeInsets.symmetric(vertical: 30),
+            child:const Center(child:Text("No scratches on right side",style: TextStyle(color: primary))),
           ):
           GestureDetector(
             onTap: scratchData.scratchOrgRsv?.length !=0 ? (){
@@ -198,8 +198,8 @@ class _BodyConditionScreenState extends State<BodyConditionScreen> {
           //leftsideview
           scratchData.scratchLSV.startsWith('assets') ?
           Container(
-            margin: EdgeInsets.symmetric(vertical: 30),
-            child:Center(child:Text("No scratches on left side",style: TextStyle(color: primary))),
+            margin: const EdgeInsets.symmetric(vertical: 30),
+            child:const Center(child:Text("No scratches on left side",style: TextStyle(color: primary))),
           ):
           GestureDetector(
             onTap: scratchData.scratchOrgLsv?.length!=0 ? (){
@@ -251,8 +251,8 @@ class _BodyConditionScreenState extends State<BodyConditionScreen> {
           //topview
           scratchData.scratchTV.startsWith('assets')?
           Container(
-            margin: EdgeInsets.symmetric(vertical: 30),
-            child:Center(child:Text("No scratches on top",style: TextStyle(color: primary))),
+            margin: const EdgeInsets.symmetric(vertical: 30),
+            child:const Center(child:Text("No scratches on top",style: TextStyle(color: primary))),
           ):
           GestureDetector(
             onTap: scratchData.scratchOrgTv?.length!=0 ?(){
@@ -300,7 +300,7 @@ class _BodyConditionScreenState extends State<BodyConditionScreen> {
               ),
             ),
           ),
-          SizedBox(height: 10,),
+          const SizedBox(height: 10,),
         ],
       ),
     );
@@ -332,12 +332,12 @@ class _BodyConditionScreenState extends State<BodyConditionScreen> {
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text('CLOSE',style: GoogleFonts.lato(color: Colors.white,fontSize: 12,fontWeight: FontWeight.w600),),
                 style: ButtonStyle(
-                  elevation: MaterialStateProperty.all(8),
-                  backgroundColor: MaterialStateProperty.all(greenlight),
-                  shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(25))),
+                  elevation: WidgetStateProperty.all(8),
+                  backgroundColor: WidgetStateProperty.all(greenlight),
+                  shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(25))),
                 ),
+                child: Text('CLOSE',style: GoogleFonts.lato(color: Colors.white,fontSize: 12,fontWeight: FontWeight.w600),),
               ),
             ],
           ),

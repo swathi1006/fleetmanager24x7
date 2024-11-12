@@ -1,11 +1,11 @@
 import 'package:fleet_manager_driver_app/model/scratch.dart';
 import 'package:fleet_manager_driver_app/service/global.dart';
-import 'package:flutter/cupertino.dart';
+//import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+//import 'package:get/get_core/src/get_main.dart';
+//import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 import '../model/vehicle.dart';
@@ -19,7 +19,7 @@ class CarDetailController extends GetxController {
   TextEditingController pinController = TextEditingController();
   TextEditingController issueController = TextEditingController();
   Scratch? scratchData;
-  RxBool _obscureText = true.obs;
+  final RxBool _obscureText = true.obs;
   bool isDashboard = false;
   bool isloading = false;
   List<bool> checkboxValues = List.generate(10, (index) => false);

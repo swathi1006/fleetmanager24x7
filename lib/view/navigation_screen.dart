@@ -14,7 +14,7 @@ import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 // import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
+//import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
@@ -613,7 +613,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
                           controller.messageController.text,
                           base64Image);
                     } catch (e) {
-                      print("Error ${e}");
+                      print("Error $e");
                     }
 
                     _SOSimageFile = Rx<File?>(null);

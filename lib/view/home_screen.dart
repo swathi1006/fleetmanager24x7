@@ -565,7 +565,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 : "Trip to Start",
                         style: const TextStyle(
                             color: greenlight, fontWeight: FontWeight.w500)),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Stack(
                       children: [
                         ClipRRect(
@@ -580,8 +580,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           bottom: 10,
                           left: 10,
                           child: Text(
-                            "${getFirstWords(loginController.currentvehicle!.vehicleName, 2)}",
-                            style: TextStyle(
+                            getFirstWords(loginController.currentvehicle!.vehicleName, 2),
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 14,
                             ),
@@ -625,7 +625,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -638,10 +638,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 5.0),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 5.0),
                           child: Text("Total Hours",
-                              style: const TextStyle(
+                              style: TextStyle(
                                   color: Colors.grey,
                                   fontSize: 8,
                                   fontWeight: FontWeight.w400)),
@@ -668,10 +668,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 5.0),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 5.0),
                           child: Text("Total Trips",
-                              style: const TextStyle(
+                              style: TextStyle(
                                   color: Colors.grey,
                                   fontSize: 8,
                                   fontWeight: FontWeight.w400)),
@@ -698,10 +698,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 5.0),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 5.0),
                           child: Text("This Year",
-                              style: const TextStyle(
+                              style: TextStyle(
                                   color: Colors.grey,
                                   fontSize: 8,
                                   fontWeight: FontWeight.w400)),
@@ -720,7 +720,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-        SizedBox(height: 30),
+        const SizedBox(height: 30),
         Container(
           margin: const EdgeInsets.only(top: 20, right: 30, left: 20),
           height: 120,
@@ -731,7 +731,7 @@ class _HomeScreenState extends State<HomeScreen> {
               gridData: FlGridData(
                 show: true,
                 getDrawingHorizontalLine: (value) {
-                  return FlLine(
+                  return const FlLine(
                     color: greenlight,
                     strokeWidth: 0.3,
                     dashArray: [2, 5],
@@ -743,9 +743,9 @@ class _HomeScreenState extends State<HomeScreen> {
               titlesData: FlTitlesData(
                 show: true,
                 topTitles:
-                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 rightTitles:
-                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 bottomTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
@@ -1028,9 +1028,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                       loginController.currentvehicle!, true));
                                 },
                                 style: ButtonStyle(
-                                  elevation: MaterialStateProperty.all(8),
+                                  elevation: WidgetStateProperty.all(8),
                                   backgroundColor:
-                                      MaterialStateProperty.all(primary),
+                                      WidgetStateProperty.all(primary),
                                 ),
                                 child: Text(
                                   'SELECT CAR',
@@ -1047,9 +1047,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
 
-                    SizedBox(height: 10),
-                    Divider(color: greenlight, thickness: 1),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
+                    const Divider(color: greenlight, thickness: 1),
+                    const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -1310,7 +1310,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           borderSide:
                               BorderSide(color: primary.withOpacity(.7)),
                         ),
-                        focusedBorder: UnderlineInputBorder(
+                        focusedBorder: const UnderlineInputBorder(
                           borderSide: BorderSide(color: primary),
                         ),
                       ),
@@ -1411,8 +1411,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   carNumberController.clear();
                                   Get.back();
                                 },
-                                child: Text("CANCEL",
-                                    style: const TextStyle(
+                                child: const Text("CANCEL",
+                                    style: TextStyle(
                                         color: primary, fontSize: 16)),
                               ),
                               TextButton(
@@ -1423,8 +1423,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   // Get.offAll(() =>
                                   //     CarDetailScreen(selectedCar, true));
                                 },
-                                child: Text("OK",
-                                    style: const TextStyle(
+                                child: const Text("OK",
+                                    style: TextStyle(
                                         color: primary, fontSize: 16)),
                               ),
                             ],

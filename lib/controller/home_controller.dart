@@ -3,9 +3,8 @@ import 'dart:io';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-
 import 'package:fleet_manager_driver_app/utils/color.dart';
-import 'package:flutter/cupertino.dart';
+//import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -27,9 +26,9 @@ class HomeController extends GetxController {
   final pinController1 = TextEditingController();
   final pinController2 = TextEditingController();
   final passwordController = TextEditingController();
-  RxBool _obscureText1 = true.obs;
-  RxBool _obscureText2 = true.obs;
-  RxBool _obscureText = true.obs;
+  final RxBool _obscureText1 = true.obs;
+  final RxBool _obscureText2 = true.obs;
+  final RxBool _obscureText = true.obs;
   RxBool isinitloading = false.obs;
   List<FlSpot> spots = [];
   int? totalTripsThisYear;
@@ -129,7 +128,7 @@ class HomeController extends GetxController {
     Get.back();
     Get.dialog(
       AlertDialog(
-        title: Text('CHANGE PIN', style: TextStyle(
+        title: const Text('CHANGE PIN', style: TextStyle(
             color: primary, fontSize: 20, fontWeight: FontWeight.w600)),
         backgroundColor: secondary,
         content: SingleChildScrollView(
@@ -303,7 +302,7 @@ Future<void> editProfile() async {
     Get.back();
     Get.dialog(
       AlertDialog(
-        title: Text('Edit Profile', style: TextStyle(
+        title: const Text('Edit Profile', style: TextStyle(
             color: primary, fontSize: 20, fontWeight: FontWeight.w600)),
         backgroundColor: secondary,
         content: SingleChildScrollView(
@@ -342,13 +341,13 @@ Future<void> editProfile() async {
                       inputFormatters: <TextInputFormatter>[
                         FilteringTextInputFormatter.digitsOnly
                       ],
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         counterText: "",
-                        prefixIcon: const Icon(Icons.dialpad_outlined),
+                        prefixIcon: Icon(Icons.dialpad_outlined),
                         prefixIconColor: primary,
                         border: InputBorder.none,
                         labelText: 'Mobile Number',
-                        labelStyle: const TextStyle(color: primary,
+                        labelStyle: TextStyle(color: primary,
                             fontSize: 15,
                             fontWeight: FontWeight.w600),
                       ),
@@ -363,13 +362,13 @@ Future<void> editProfile() async {
                 ),
                 child: TextFormField(
                       controller: locationController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         counterText: "",
-                        prefixIcon: const Icon(Icons.location_pin),
+                        prefixIcon: Icon(Icons.location_pin),
                         prefixIconColor: primary,
                         border: InputBorder.none,
                         labelText: 'Location',
-                        labelStyle: const TextStyle(color: primary,
+                        labelStyle: TextStyle(color: primary,
                             fontSize: 15,
                             fontWeight: FontWeight.w600),
                       ),
