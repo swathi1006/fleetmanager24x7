@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "189281079907",
+    "project_id": "fleetmanager-24x7",
+    "storage_bucket": "fleetmanager-24x7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:189281079907:android:b76fd0ce4c2d37080fde56",
+        "android_client_info": {
+          "package_name": "com.fleet_manager_driver_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwRxVU_HvQEUX5xNj2npyh8QWGbsAXEhg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -32,8 +32,10 @@
 //   }
 // }
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:fleet_manager_driver_app/service/database.dart';
 import 'package:fleet_manager_driver_app/service/global.dart';
+import 'package:fleet_manager_driver_app/service/push_notifications.dart';
 import 'package:fleet_manager_driver_app/utils/color.dart';
 import 'package:fleet_manager_driver_app/utils/theme.dart';
 import 'package:fleet_manager_driver_app/view/splash_screen.dart';
@@ -54,7 +56,18 @@ Future<void> main() async {
     
   }
 
-  runApp(MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(
+        apiKey: "AIzaSyDwRxVU_HvQEUX5xNj2npyh8QWGbsAXEhg",
+        appId: "1:189281079907:android:b76fd0ce4c2d37080fde56",
+        messagingSenderId: "189281079907",
+        projectId: "fleetmanager-24x7"
+    )
+  );
+  await FirebaseApi().initNotifications();
+
+  runApp(const MyApp());
   
   // Lock orientation to portrait mode
   SystemChrome.setPreferredOrientations([
